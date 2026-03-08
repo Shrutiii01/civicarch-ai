@@ -17,25 +17,36 @@ function Signup() {
 
   // ── Existing Backend Logic ──
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    try {
-      const res = await signup({
-        name,
-        email,
-        password,
-      });
+  try {
+    const res = await signup({
+      name,
+      email,
+      password,
+    });
 
-      console.log(res.data);
-      alert("Account created successfully!");
-      navigate("/login"); 
+    console.log(res.data);
 
-    } catch (err) {
-      console.error(err);
+    alert("OTP sent to your email. Please verify your account.");
+
+    // store email for OTP verification page
+    localStorage.setItem("verifyEmail", email);
+
+    // redirect to OTP page
+    navigate("/verify-otp");
+
+  } catch (err) {
+    console.error(err);
+
+    if (err.response?.data?.detail) {
+      setError(err.response.data.detail);
+    } else {
       setError("Failed to create account. Please try again.");
     }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#FDF6ED] flex flex-col font-sans text-[#1A1A1A] page-transition">
