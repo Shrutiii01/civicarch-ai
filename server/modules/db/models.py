@@ -41,7 +41,8 @@ class Complaint(Base):
 
     original_text = Column(Text)
     translated_text = Column(Text)
-
+    complaint_draft = Column(Text)
+    request_type = Column(String) 
     category = Column(String)
     location = Column(String)
 
