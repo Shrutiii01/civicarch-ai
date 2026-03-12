@@ -6,9 +6,17 @@ from modules.db import models
 from dotenv import load_dotenv
 import os
 
+from modules.complaints.complaint_routes import router as complaint_router
+
+app = FastAPI()
+
+app.include_router(auth_router)
+app.include_router(complaint_router)
+
+
 load_dotenv() 
 Base.metadata.create_all(bind=engine)
-app = FastAPI()
+
 
 origins = [
     "http://localhost:5173",
@@ -22,7 +30,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_router)
 
 @app.get("/")
 def home():
