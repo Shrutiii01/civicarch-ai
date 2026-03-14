@@ -41,4 +41,28 @@ export const resetPassword = (email, otp, newPassword) => {
   })
 }
 
+/* ------------------------
+   COMPLAINT API
+------------------------- */
+
+export const submitComplaint = (data) => {
+  return api.post("/complaints/submit", data)
+}
+
+/* ------------------------
+   IMAGE PROCESSING API
+------------------------- */
+
+export const processImage = (imageFile) => {
+
+  const formData = new FormData()
+  formData.append("image", imageFile)
+
+  return api.post("/ai/process-image", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  })
+}
+
 export default api
