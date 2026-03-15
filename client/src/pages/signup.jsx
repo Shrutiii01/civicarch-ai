@@ -38,14 +38,20 @@ function Signup() {
     navigate("/verify-otp");
 
   } catch (err) {
-    console.error(err);
+  if (err.response?.data?.detail) {
 
-    if (err.response?.data?.detail) {
-      setError(err.response.data.detail);
+    const detail = err.response.data.detail;
+
+    if (Array.isArray(detail)) {
+      setError(detail[0].msg);
     } else {
-      setError("Failed to create account. Please try again.");
+      setError(detail);
     }
+
+  } else {
+    setError("Sign up failed");
   }
+}
 };
 
   return (
