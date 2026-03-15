@@ -53,4 +53,9 @@ def create_complaint(db, user_id, text, location, pincode, category):
     db.commit()
     db.refresh(complaint)
 
-    return complaint
+    return {
+        "complaint_id": complaint.id,
+        "category": category,
+        "department": department,
+        "draft": draft
+    }

@@ -19,7 +19,8 @@ def get_db():
 @router.post("/submit")
 def submit_complaint(data: ComplaintRequest, db: Session = Depends(get_db)):
 
-    complaint = create_complaint(
+    # Run complaint processing (AI classification + draft generation)
+    result = create_complaint(
         db,
         user_id=None,
         text=data.text,
@@ -30,5 +31,9 @@ def submit_complaint(data: ComplaintRequest, db: Session = Depends(get_db)):
 
     return {
         "message": "Complaint submitted",
-        "complaint_id": str(complaint.id)
+        "complaint_id": str(result["complaint_id"]),
+        "original_text": data.text,
+        "category": result["category"],
+        "department": result["department"],
+        "draft": result["draft"]
     }
