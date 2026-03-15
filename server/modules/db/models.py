@@ -1,8 +1,8 @@
-from sqlalchemy import Column, String, Boolean, DateTime , Text, String, Integer ,TIMESTAMP
+from sqlalchemy import Column, String, Boolean, DateTime , Text, String, Integer ,TIMESTAMP,ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import uuid
-
+from sqlalchemy.orm import relationship
 from .database import Base
 
 
@@ -29,6 +29,7 @@ class User(Base):
     otp_code = Column(String, nullable=True)
     otp_expiry = Column(DateTime, nullable=True)
 
+    complaints = relationship("Complaint", back_populates="user")
 
 
 class Complaint(Base):
@@ -37,22 +38,51 @@ class Complaint(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
-    user_id = Column(UUID(as_uuid=True))
+    # Link complaint to user
+    user_id = Column(UUID(as_uuid=True), ForeignKey("auth1.users.id"))
 
+    # Complaint content
     original_text = Column(Text)
     translated_text = Column(Text)
-    complaint_draft = Column(Text)
-    request_type = Column(String) 
-    category = Column(String)
-    location = Column(String)
 
+    # AI outputs
+    complaint_draft = Column(Text)
+    ai_draft = Column(Text)
+
+    # Classification
+    request_type = Column(String)  # complaint or project_request
+    category = Column(String)
+
+    # Location info
+    location = Column(String)
     pincode = Column(Integer)
 
     latitude = Column(String)
     longitude = Column(String)
 
+    # Responsible department
     department = Column(String)
 
-    ai_draft = Column(Text)
+    # Tracking status
+    status = Column(String, default="Submitted")
 
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="complaints")
+    files = relationship("ComplaintFile", back_populates="complaint")
+
+class ComplaintFile(Base):
+    __tablename__ = "complaint_files"
+    __table_args__ = {"schema": "civic"}
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    complaint_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("civic.complaints.id")
+    )
+
+    file_url = Column(Text)
+
+    file_type = Column(String)
+
+    complaint = relationship("Complaint", back_populates="files")
