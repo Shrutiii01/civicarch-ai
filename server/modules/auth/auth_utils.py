@@ -31,3 +31,8 @@ def create_access_token(user_id):
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     return token
+
+import random
+
+def generate_otp():
+    return str(random.randint(100000, 999999))

@@ -1,41 +1,42 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../services/api";
-import { Landmark, User, Shield, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { resetPassword } from "../services/api";
+import { Landmark, ShieldCheck, Eye, EyeOff, ArrowRight, Lock } from "lucide-react";
 
-function Login() {
-  // ── Existing Backend State ──
-  const [email, setEmail] = useState("");
+export default function ResetPassword() {
+  // ── Existing Backend State & Logic ──
+  const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // ── New UI State ──
-  const [role, setRole] = useState("citizen");
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const email = localStorage.getItem("resetEmail");
 
-  // ── Existing Backend Logic ──
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
 
     try {
-      const res = await login({ email, password });
-      const token = res.data.token;
-      localStorage.setItem("token", token);
-      
-      alert("Login successful");
-      // navigate("/dashboard"); 
+      await resetPassword(email, otp, password);
+      alert("Password reset successful");
+      navigate("/login");
     } catch (err) {
-      setError("Invalid credentials. Please try again.");
+      if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError("Reset failed");
+      }
     }
   };
+
+  // ── New UI State ──
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#FDF6ED] flex flex-col font-sans text-[#1A1A1A] page-transition">
       
       {/* ── Header ── */}
-      <header className="w-full p-6 lg:px-12 flex justify-between items-center">
+      <header className="w-full p-6 lg:px-12 flex justify-start items-center">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
             <Landmark size={20} />
@@ -48,38 +49,40 @@ function Login() {
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl flex flex-col lg:flex-row overflow-hidden border border-stone-100">
           
-          {/* ── Left Column: Login Form ── */}
+          {/* ── Left Column: Reset Form ── */}
           <div className="w-full lg:w-1/2 p-8 lg:p-14 flex flex-col justify-center">
-            <h2 className="font-serif text-3xl font-bold mb-2">Welcome Back</h2>
+            
+            <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mb-6">
+              <Lock className="text-[#e9671c]" size={24} />
+            </div>
+
+            <h2 className="font-serif text-3xl font-bold mb-2">Create New Password</h2>
             <p className="text-stone-500 text-sm mb-8 leading-relaxed">
-              Access your institutional dashboard and track administrative justice.
+              Enter the verification code sent to <span className="font-semibold text-stone-700">{email || "your email"}</span> and establish your new secure password.
             </p>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
+              
               <div>
                 <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">
-                  Official Email
+                  Verification Code (OTP)
                 </label>
                 <input
-                  type="email"
-                  placeholder="name@domain.gov.in"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-stone-50 border border-stone-200 text-sm px-4 py-3.5 rounded-lg outline-none focus:border-[#e9671c] focus:ring-1 focus:ring-[#e9671c] transition-all"
+                  type="text"
+                  placeholder="000000"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  maxLength={6}
+                  className="w-full bg-stone-50 border border-stone-200 text-lg font-mono tracking-widest px-4 py-3.5 rounded-lg outline-none focus:border-[#e9671c] focus:ring-1 focus:ring-[#e9671c] transition-all"
                   required
                 />
               </div>
 
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">
-                    Password
-                  </label>
-                  <Link to="/forgot-password" className="text-[10px] font-bold text-[#e9671c] uppercase tracking-widest hover:underline">
-                    ForgotPassword?
-                  </Link>
-                </div>
+                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">
+                  New Password
+                </label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -108,24 +111,17 @@ function Login() {
 
               <button
                 type="submit"
-                className="w-full bg-[#e9671c] hover:bg-[#D35400] text-white font-bold py-3.5 rounded-lg transition-colors flex justify-center items-center gap-2 mt-2"
+                className="w-full bg-[#e9671c] hover:bg-[#D35400] text-white font-bold py-3.5 rounded-lg transition-colors flex justify-center items-center gap-2 mt-2 shadow-lg shadow-orange-500/20"
               >
-                Sign In <ArrowRight size={18} />
+                Reset Password <ArrowRight size={18} />
               </button>
             </form>
 
-            {/* ── NEW: Create Account Section ── */}
-            <div className="mt-8 flex items-center justify-between">
-              <span className="w-1/4 border-b border-stone-200"></span>
-             <div className="flex items-center gap-4 text-sm">
-          <span className="text-stone-500 hidden sm:inline">Don't have an account?</span>
-        </div> <span className="w-1/4 border-b border-stone-200"></span>
-            </div>
-
-            <div className="mt-6">
-              <Link to="/signup" className="border border-[#e9671c] text-[#e9671c] px-6 py-2 rounded-md font-semibold hover:bg-[#e9671c] hover:text-white transition-colors flex justify-center items-center gap-2">
-            Sign Up
-          </Link>
+            {/* Back to Login */}
+            <div className="mt-8 text-center">
+              <Link to="/login" className="text-xs font-bold text-stone-500 hover:text-[#e9671c] transition-colors">
+                ← Back to Login
+              </Link>
             </div>
             
           </div>
@@ -138,31 +134,27 @@ function Login() {
                 <img 
                   src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&q=80" 
                   alt="Taj Mahal" 
-                  className="w-full h-full object-cover rounded-xl shadow-lg"
+                  className="w-full h-full object-cover rounded-xl shadow-lg grayscale-[20%]"
                 />
               </div>
 
               <div className="p-10 flex flex-col justify-end h-1/2 text-white z-10">
                 <span className="bg-white/20 w-fit px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4 backdrop-blur-sm border border-white/10">
-                  Institutional Platform
+                  Secure Protocol
                 </span>
-                <h3 className="font-serif text-4xl font-bold mb-3">Empowering Digital India</h3>
+                <h3 className="font-serif text-4xl font-bold mb-3">Verified Access Only</h3>
                 <p className="text-white/80 text-sm leading-relaxed max-w-sm mb-8">
-                  Join the unified portal for modern governance and intelligent legal infrastructure.
+                  Ensuring absolute data integrity and citizen privacy through multi-layered institutional security.
                 </p>
                 
                 <div className="flex gap-8">
                   <div>
-                    <div className="font-bold text-xl">1.2B+</div>
-                    <div className="text-[10px] uppercase tracking-widest text-white/70 font-bold mt-1">Citizens</div>
+                    <div className="font-bold text-xl">256-bit</div>
+                    <div className="text-[10px] uppercase tracking-widest text-white/70 font-bold mt-1">Encryption</div>
                   </div>
                   <div>
-                    <div className="font-bold text-xl">750+</div>
-                    <div className="text-[10px] uppercase tracking-widest text-white/70 font-bold mt-1">Districts</div>
-                  </div>
-                  <div>
-                    <div className="font-bold text-xl">AI</div>
-                    <div className="text-[10px] uppercase tracking-widest text-white/70 font-bold mt-1">Powered</div>
+                    <div className="font-bold text-xl">Zero</div>
+                    <div className="text-[10px] uppercase tracking-widest text-white/70 font-bold mt-1">Breaches</div>
                   </div>
                 </div>
               </div>
@@ -186,5 +178,3 @@ function Login() {
     </div>
   );
 }
-
-export default Login;
