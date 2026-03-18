@@ -1,154 +1,482 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { verifyOTP } from "../services/api";
-import { Landmark, ShieldCheck, ArrowRight, Mail } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
-export default function VerifyOTP() {
-  // ── Existing Backend State & Logic ──
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
+export default function OTPVerification() {
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [timer, setTimer] = useState(59);
+  const [canResend, setCanResend] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Backend connection state
+  const [errorMessage, setErrorMessage] = useState(""); // Backend error handling
+  const inputRefs = useRef([]);
 
-  const navigate = useNavigate();
-  const email = localStorage.getItem("verifyEmail");
+  // Mock User ID - In production, retrieve this from your login state/localStorage
+  const userId = "user_4821";
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    if (timer > 0) {
+      const t = setTimeout(() => setTimer(timer - 1), 1000);
+      return () => clearTimeout(t);
+    } else {
+      setCanResend(true);
+    }
+  }, [timer]);
+
+  const handleChange = (index, value) => {
+    if (!/^\d?$/.test(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    setErrorMessage("");
+    if (value && index < 5) inputRefs.current[index + 1]?.focus();
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e) => {
     e.preventDefault();
-    setError("");
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const newOtp = ["", "", "", "", "", ""];
+    pasted.split("").forEach((char, i) => { newOtp[i] = char; });
+    setOtp(newOtp);
+    const nextEmpty = newOtp.findIndex(v => !v);
+    inputRefs.current[nextEmpty === -1 ? 5 : nextEmpty]?.focus();
+  };
+
+  // ─── CONNECT TO BACKEND ───
+  const handleVerify = async () => {
+    const otpString = otp.join("");
+    if (otpString.length < 6) return;
+
+    setIsLoading(true);
+    setErrorMessage("");
 
     try {
-      await verifyOTP(email, otp);
-      alert("Email verified successfully!");
-      navigate("/login");
-    } catch (err) {
-      if (err.response?.data?.detail) {
-        setError(err.response.data.detail);
+      const response = await fetch("http://localhost:5000/api/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, otp: otpString }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Success! Identity Verified.");
+        // window.location.href = "/dashboard";
       } else {
-        setError("Invalid OTP");
+        setErrorMessage(data.message || "Invalid code.");
       }
+    } catch (err) {
+      setErrorMessage("Server connection error.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (!canResend) return;
+    setIsLoading(true);
+    try {
+      await fetch("http://localhost:5000/api/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      setTimer(59);
+      setCanResend(false);
+      setOtp(["", "", "", "", "", ""]);
+      setErrorMessage("");
+    } catch (err) {
+      setErrorMessage("Failed to resend.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#FDF6ED] flex flex-col font-sans text-[#1A1A1A] page-transition">
-      
-      {/* ── Header ── */}
-      <header className="w-full p-6 lg:px-12 flex justify-start items-center">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
-            <Landmark size={20} />
-          </div>
-          <h1 className="font-serif text-xl font-bold">CivicArch AI</h1>
-        </Link>
-      </header>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
-      {/* ── Main Content ── */}
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl flex flex-col lg:flex-row overflow-hidden border border-stone-100">
-          
-          {/* ── Left Column: OTP Form ── */}
-          <div className="w-full lg:w-1/2 p-8 lg:p-14 flex flex-col justify-center">
-            
-            <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mb-6">
-              <ShieldCheck className="text-[#e9671c]" size={24} />
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body, #root { height: 100%; }
+        body {
+          font-family: 'Inter', sans-serif;
+          background: #f8f6f6;
+          color: #0f172a;
+        }
+
+        .ms {
+          font-family: 'Material Symbols Outlined';
+          font-weight: normal;
+          font-style: normal;
+          line-height: 1;
+          letter-spacing: normal;
+          text-transform: none;
+          display: inline-block;
+          white-space: nowrap;
+          word-wrap: normal;
+          direction: ltr;
+          -webkit-font-smoothing: antialiased;
+        }
+
+        .dot-bg {
+          background-color: #f8f6f6;
+          background-image: radial-gradient(circle, rgba(0,0,0,0.065) 1px, transparent 1px);
+          background-size: 40px 40px;
+        }
+
+        .otp-input {
+          width: 100%;
+          height: 62px;
+          text-align: center;
+          font-size: 22px;
+          font-weight: 700;
+          font-family: 'Inter', sans-serif;
+          border-radius: 8px;
+          border: 2px solid #e2e8f0;
+          background: transparent;
+          color: #0f172a;
+          outline: none;
+          transition: border-color 0.15s ease;
+          caret-color: #ec5b13;
+        }
+        .otp-input:focus { border-color: #ec5b13; }
+        .otp-input.filled { border-color: #ec5b13; }
+
+        .verify-btn {
+          width: 100%;
+          padding: 15px 20px;
+          background: #ec5b13;
+          color: #fff;
+          font-family: 'Inter', sans-serif;
+          font-weight: 700;
+          font-size: 15px;
+          letter-spacing: 0.01em;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          box-shadow: 0 4px 20px rgba(236,91,19,0.28);
+          transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .verify-btn:hover { background: #d44e0e; }
+        .verify-btn:active { transform: scale(0.99); }
+        .verify-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .resend-btn {
+          background: none;
+          border: none;
+          padding: 0;
+          margin: 0;
+          cursor: pointer;
+          color: #ec5b13;
+          font-family: 'Inter', sans-serif;
+          font-weight: 600;
+          font-size: 13px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          transition: opacity 0.2s;
+        }
+        .resend-btn:disabled { opacity: 0.65; cursor: default; }
+
+        .footer-link {
+          color: #94a3b8;
+          text-decoration: none;
+          font-family: 'Inter', sans-serif;
+          font-size: 12px;
+          transition: color 0.2s;
+        }
+        .footer-link:hover { color: #ec5b13; }
+
+        .help-fab {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          width: 44px;
+          height: 44px;
+          background: white;
+          border: 1px solid #e2e8f0;
+          border-radius: 50%;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+          color: #64748b;
+          transition: color 0.2s;
+        }
+        .help-fab:hover { color: #ec5b13; }
+      `}</style>
+
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+
+        <header style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          borderBottom: "1px solid #e2e8f0",
+          background: "rgba(255,255,255,0.82)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        }}>
+          <div style={{
+            maxWidth: 1280,
+            margin: "0 auto",
+            padding: "0 24px",
+            height: 64,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+              <div style={{
+                width: 36,
+                height: 36,
+                background: "#ec5b13",
+                borderRadius: 7,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <polygon points="10,2 19,8 1,8" fill="white" />
+                  <rect x="1" y="15" width="18" height="2.5" rx="0.5" fill="white" />
+                  <rect x="3" y="8.5" width="2.2" height="6.2" rx="0.4" fill="white" />
+                  <rect x="6.8" y="8.5" width="2.2" height="6.2" rx="0.4" fill="white" />
+                  <rect x="10.6" y="8.5" width="2.2" height="6.2" rx="0.4" fill="white" />
+                  <rect x="14.4" y="8.5" width="2.2" height="6.2" rx="0.4" fill="white" />
+                </svg>
+              </div>
+
+              <span style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 800,
+                fontSize: 18,
+                letterSpacing: "-0.025em",
+                lineHeight: 1,
+                color: "#0f172a",
+              }}>
+                CivicArch{" "}
+                <span style={{ color: "#ec5b13" }}>AI</span>
+              </span>
             </div>
 
-            <h2 className="font-serif text-3xl font-bold mb-2">Identity Verification</h2>
-            <p className="text-stone-500 text-sm mb-8 leading-relaxed">
-              For your security, we've sent a One-Time Password to your official email address.
-            </p>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              color: "#475569",
+              fontSize: 14,
+              fontWeight: 500,
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              <span className="ms" style={{ fontSize: 17 }}>verified_user</span>
+              Secure Portal
+            </div>
+          </div>
+        </header>
 
-            {/* Email Display Banner */}
-            {email && (
-              <div className="flex items-center gap-3 bg-stone-50 border border-stone-200 p-4 rounded-lg mb-8">
-                <Mail className="text-stone-400" size={18} />
-                <span className="text-sm font-semibold text-stone-600">{email}</span>
+        <main className="dot-bg" style={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "40px 16px",
+        }}>
+
+          <div style={{
+            width: "100%",
+            maxWidth: 492,
+            background: "white",
+            borderRadius: 14,
+            border: "1px solid #e2e8f0",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.09), 0 4px 12px rgba(0,0,0,0.05)",
+            overflow: "hidden",
+          }}>
+
+            <div style={{
+              background: "#f8fafc",
+              padding: "36px 44px 30px",
+              textAlign: "center",
+              borderBottom: "1px solid #f1f5f9",
+            }}>
+              <div style={{
+                width: 64,
+                height: 64,
+                borderRadius: "50%",
+                background: "rgba(236,91,19,0.10)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 16px",
+              }}>
+                <span className="ms" style={{ fontSize: 36, color: "#ec5b13" }}>domain_verification</span>
               </div>
-            )}
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              
-              <div>
-                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3 text-center">
-                  Enter 6-Digit Code
-                </label>
-                <input
-                  type="text"
-                  placeholder="000000"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  maxLength={6}
-                  className="w-full bg-stone-50 border border-stone-200 text-2xl font-mono text-center tracking-[1em] px-4 py-4 rounded-lg outline-none focus:border-[#e9671c] focus:ring-1 focus:ring-[#e9671c] transition-all"
-                  required
-                />
-              </div>
+              <h1 style={{
+                fontFamily: "'Playfair Display', serif",
+                fontWeight: 800,
+                fontSize: 29,
+                color: "#0f172a",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.15,
+                marginBottom: 11,
+              }}>
+                Two-Step Verification
+              </h1>
 
+              <p style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 14,
+                color: "#64748b",
+                lineHeight: 1.65,
+                maxWidth: 330,
+                margin: "0 auto",
+              }}>
+                For your security, we've sent a 6-digit verification
+                code to your registered mobile device ending in{" "}
+                <strong style={{ fontWeight: 700, color: "#0f172a" }}>•••• 4821</strong>.
+              </p>
+            </div>
+
+            <div style={{ padding: "30px 44px 28px" }}>
               {/* Error Message Display */}
-              {error && (
-                <div className="bg-red-50 text-red-500 text-xs font-semibold p-3 rounded-lg border border-red-100 text-center">
-                  {error}
-                </div>
+              {errorMessage && (
+                <p style={{ color: "#ef4444", fontSize: 13, textAlign: "center", marginBottom: 15, fontWeight: 500 }}>
+                  {errorMessage}
+                </p>
               )}
 
-              <button
-                type="submit"
-                className="w-full bg-[#e9671c] hover:bg-[#D35400] text-white font-bold py-4 rounded-lg transition-colors flex justify-center items-center gap-2 mt-2"
+              <div
+                style={{ display: "flex", gap: 9, marginBottom: 22 }}
+                onPaste={handlePaste}
               >
-                Verify Identity <ArrowRight size={18} />
+                {otp.map((digit, i) => (
+                  <input
+                    key={i}
+                    ref={el => inputRefs.current[i] = el}
+                    className={`otp-input${digit ? " filled" : ""}`}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    autoFocus={i === 0}
+                    onChange={e => handleChange(i, e.target.value)}
+                    onKeyDown={e => handleKeyDown(i, e)}
+                  />
+                ))}
+              </div>
+
+              <button
+                className="verify-btn"
+                onClick={handleVerify}
+                disabled={isLoading || otp.includes("")}
+              >
+                <span>{isLoading ? "Verifying..." : "Verify Identity"}</span>
+                {!isLoading && <span style={{ fontSize: 17, lineHeight: 1, fontFamily: "inherit" }}>→</span>}
               </button>
-            </form>
-            
-          </div>
 
-          {/* ── Right Column: Info Graphic ── */}
-          <div className="hidden lg:block w-1/2 p-4">
-            <div className="w-full h-full bg-[#e9671c] rounded-xl overflow-hidden flex flex-col relative">
-              
-              <div className="h-1/2 w-full p-6 pb-0 z-10">
-                <img 
-                  src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&q=80" 
-                  alt="Taj Mahal" 
-                  className="w-full h-full object-cover rounded-xl shadow-lg grayscale-[20%]"
-                />
-              </div>
-
-              <div className="p-10 flex flex-col justify-end h-1/2 text-white z-10">
-                <span className="bg-white/20 w-fit px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4 backdrop-blur-sm border border-white/10">
-                  Secure Protocol
-                </span>
-                <h3 className="font-serif text-4xl font-bold mb-3">Verified Access Only</h3>
-                <p className="text-white/80 text-sm leading-relaxed max-w-sm mb-8">
-                  Ensuring absolute data integrity and citizen privacy through multi-layered institutional security.
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 6,
+                marginTop: 18,
+                paddingTop: 6,
+              }}>
+                <p style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 13,
+                  color: "#94a3b8",
+                }}>
+                  Didn't receive the code?
                 </p>
-                
-                <div className="flex gap-8">
-                  <div>
-                    <div className="font-bold text-xl">256-bit</div>
-                    <div className="text-[10px] uppercase tracking-widest text-white/70 font-bold mt-1">Encryption</div>
-                  </div>
-                  <div>
-                    <div className="font-bold text-xl">Zero</div>
-                    <div className="text-[10px] uppercase tracking-widest text-white/70 font-bold mt-1">Breaches</div>
-                  </div>
-                </div>
+                <button
+                  className="resend-btn"
+                  onClick={handleResend}
+                  disabled={!canResend || isLoading}
+                >
+                  <span className="ms" style={{ fontSize: 14 }}>refresh</span>
+                  {canResend
+                    ? "Resend code"
+                    : `Resend code in ${String(Math.floor(timer / 60)).padStart(2, "0")}:${String(timer % 60).padStart(2, "0")}`
+                  }
+                </button>
               </div>
+            </div>
 
-              {/* Decorative Background Elements */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+            <div style={{
+              padding: "13px 44px",
+              background: "rgba(248,250,252,0.7)",
+              borderTop: "1px solid #f1f5f9",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 32,
+            }}>
+              {[
+                { icon: "security", label: "RSA ENCRYPTED" },
+                { icon: "gpp_good", label: "ISO 27001" },
+              ].map(b => (
+                <div key={b.label} style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  opacity: 0.45,
+                }}>
+                  <span className="ms" style={{ fontSize: 14 }}>{b.icon}</span>
+                  <span style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "#0f172a",
+                  }}>
+                    {b.label}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-        </div>
-      </main>
+          <footer style={{
+            marginTop: 26,
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+          }}>
+            <p style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12,
+              color: "#94a3b8",
+            }}>
+              © 2026 CivicArch AI Infrastructure Group. All rights reserved.
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: 20 }}>
+              {["Privacy Policy", "Terms of Service", "Contact Support"].map(l => (
+                <a key={l} href="#" className="footer-link">{l}</a>
+              ))}
+            </div>
+          </footer>
+        </main>
+      </div>
 
-      {/* ── Footer ── */}
-      <footer className="w-full p-6 lg:px-12 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-bold text-stone-400 uppercase tracking-widest">
-        <div className="flex gap-6">
-          <a href="#privacy" className="hover:text-[#e9671c] transition-colors">Privacy</a>
-          <a href="#terms" className="hover:text-[#e9671c] transition-colors">Terms</a>
-        </div>
-        <div>© 2024 CivicArch AI</div>
-      </footer>
-    </div>
+      <button className="help-fab">
+        <span className="ms" style={{ fontSize: 20 }}>help_center</span>
+      </button>
+    </>
   );
 }

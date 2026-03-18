@@ -11,7 +11,7 @@ import {
 const Landing = () => {
     // ── Backend Connection State ──
     const [message, setMessage] = useState("Connecting to server...");
-    
+
     // ── UI State ──
     const [openFaq, setOpenFaq] = useState(null);
     const [text, setText] = useState('');
@@ -113,10 +113,10 @@ const Landing = () => {
                             <p className="text-[10px] uppercase tracking-tighter text-stone-500 font-bold">Institutional RTI Infrastructure</p>
                         </div>
                     </div>
+                    {/* Navigation: "File RTI" link removed */}
                     <div className="hidden lg:flex items-center gap-10">
                         <Link to="/" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Home</Link>
                         <a className="text-sm font-semibold hover:text-[#e9671c] transition-colors cursor-pointer" href="#how-it-works">How It Works</a>
-                        <Link to="/login" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">File RTI</Link>
                         <Link to="/heatmap" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Heatmap</Link>
                         <a className="text-sm font-semibold hover:text-[#e9671c] transition-colors cursor-pointer" href="#dashboard">Dashboard</a>
                     </div>
@@ -130,8 +130,7 @@ const Landing = () => {
             <section className="relative h-[650px] flex items-stretch overflow-hidden bg-[#FDF6ED]">
                 <div className="w-full lg:w-7/12 bg-gradient-to-br from-[#e9671c] via-[#e9671c] to-[#C0392B] relative z-10 flex items-center px-12 lg:px-24 hero-diagonal">
                     <div className="max-w-xl text-white">
-                        
-                        {/* Status Indicators */}
+
                         <div className="flex flex-wrap gap-3 mb-8">
                             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1 text-white/90 text-xs font-bold tracking-widest uppercase">
                                 <span className="relative flex h-2 w-2">
@@ -140,8 +139,6 @@ const Landing = () => {
                                 </span>
                                 National Compliance Active
                             </div>
-                            
-                            {/* Integrated Backend Message Here */}
                             <div className="inline-flex items-center gap-2 bg-black/20 border border-white/10 rounded-full px-4 py-1 text-white/90 text-xs font-bold tracking-widest uppercase">
                                 <span className={`h-2 w-2 rounded-full ${message === 'Connecting to server...' || message === 'Server connection failed' ? 'bg-red-400' : 'bg-green-400'}`}></span>
                                 System: {message}
@@ -170,18 +167,12 @@ const Landing = () => {
                 <div className="absolute right-0 top-0 w-full lg:w-1/2 h-full z-0">
                     <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${heroImg}')` }}></div>
                     <div className="absolute inset-0 bg-[#1A1A1A]/20"></div>
-                    <div className="absolute top-20 right-20 bg-white/85 backdrop-blur-md p-6 rounded-lg shadow-2xl flex flex-col items-center min-w-[160px] border border-orange-500/10 scale-110">
-                        <span className="text-stone-500 text-[10px] uppercase font-bold tracking-widest mb-1">Compliance Score</span>
-                        <div className="text-[#e9671c] text-4xl font-serif font-black italic">9.2<span className="text-stone-400 text-xl font-normal not-italic">/10</span></div>
-                        <div className="w-full h-1.5 bg-stone-200 mt-4 rounded-full overflow-hidden">
-                            <div className="bg-[#e9671c] h-full w-[92%]"></div>
-                        </div>
-                    </div>
+                    {/* Compliance Score Section Removed from here */}
                 </div>
             </section>
 
             {/* ── Framework ── */}
-            <section className="py-24 bg-white border-b border-stone-100">
+            <section className="py-24 bg-white border-b border-stone-100" id="how-it-works">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-20">
                         <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Framework</h3>
@@ -262,7 +253,6 @@ const Landing = () => {
                                 <div className="w-full h-full bg-cover bg-center grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-700"
                                     style={{ backgroundImage: `url('${mapImg}')` }}></div>
 
-                                {/* Pulse Nodes */}
                                 <div className="absolute top-[35%] left-[45%] flex items-center justify-center">
                                     <div className="w-12 h-12 rounded-full bg-orange-500/20 animate-ping absolute"></div>
                                     <div className="w-4 h-4 rounded-full bg-[#e9671c] border-2 border-white shadow-lg relative"></div>
@@ -315,8 +305,18 @@ const Landing = () => {
                                 {faqs.map((q, idx) => (
                                     <div key={idx} className="border border-stone-100 bg-[#FDF6ED]/30 p-5 rounded hover:border-[#e9671c] transition-all cursor-pointer flex justify-between items-center group"
                                         onClick={() => setOpenFaq(openFaq === idx ? null : idx)}>
-                                        <span className="font-bold text-sm group-hover:text-[#e9671c] transition-colors">{q}</span>
-                                        <ChevronDown size={18} className={`text-stone-400 transition-transform ${openFaq === idx ? 'rotate-180' : ''}`} />
+                                        <div className="flex flex-col w-full">
+                                            <div className="flex justify-between items-center w-full">
+                                                <span className="font-bold text-sm group-hover:text-[#e9671c] transition-colors">{q}</span>
+                                                <ChevronDown size={18} className={`text-stone-400 transition-transform ${openFaq === idx ? 'rotate-180' : ''}`} />
+                                            </div>
+                                            {openFaq === idx && (
+                                                <p className="mt-4 text-xs text-stone-500 leading-relaxed animate-in fade-in slide-in-from-top-1">
+                                                    Information relating to {q.toLowerCase()} is protected under our institutional security protocols.
+                                                    Please refer to the latest government gazette for official timelines.
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>

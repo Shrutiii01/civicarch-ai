@@ -7,20 +7,16 @@ from modules.db import models
 from dotenv import load_dotenv
 import os
 
+# Import the complaint router
 from modules.complaints.complaint_routes import router as complaint_router
 
-app = FastAPI()
+# 1. Initialize App
+app = FastAPI(title="CivicArch AI Backend")
 
-app.include_router(auth_router)
-app.include_router(complaint_router)
-app.include_router(image_router, prefix="/ai")
-
-load_dotenv() 
-Base.metadata.create_all(bind=engine)
-
-
+# 2. Configure CORS (Must be defined BEFORE including routers for best practice)
 origins = [
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 app.add_middleware(
@@ -31,7 +27,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 3. Load Environment & Database
+load_dotenv() 
+Base.metadata.create_all(bind=engine)
 
+# 4. Include Routers
+app.include_router(auth_router)
+app.include_router(complaint_router)
+app.include_router(image_router, prefix="/ai")
+
+# 5. Root Route
 @app.get("/")
 def home():
     return {"message": "CivicArch AI Backend Running"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

@@ -9,6 +9,7 @@ import ResetPassword from "./pages/ResetPassword";
 
 import ComplaintPage from "./pages/complaintPage";
 import ResultPage from "./pages/ResultPage";
+import ProcessingPage from "./pages/processing";
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
         {/* Complaint System Routes */}
         <Route path="/complaint" element={<ComplaintPage />} />
         <Route path="/result" element={<ResultPage />} />
-
+        <Route path="/processing" element={<ProcessingPage />} />
       </Routes>
     </Router>
   );
