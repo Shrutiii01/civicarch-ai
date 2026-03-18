@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
@@ -35,3 +36,20 @@ def get_db():
         yield db
     finally:
         db.close()
+=======
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_engine(DATABASE_URL)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# ✅ THIS IS REQUIRED
+Base = declarative_base()
+>>>>>>> ddb34b4ac3b73e142b49e80a288b4e70679484f2

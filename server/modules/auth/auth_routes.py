@@ -2,8 +2,16 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from modules.db.database import SessionLocal
+
 from .auth_schema import SignupRequest, LoginRequest
-from .auth_service import signup_user, login_user
+
+from .auth_service import (
+    signup_user,
+    login_user,
+    verify_otp,
+    forgot_password,
+    reset_password
+)
 
 router = APIRouter(prefix="/auth")
 
@@ -17,16 +25,16 @@ def get_db():
 
 
 @router.post("/signup")
-def signup(data: SignupRequest, db: Session = Depends(get_db)):
+async def signup(data: SignupRequest, db: Session = Depends(get_db)):
 
-    user = signup_user(
+    await signup_user(
         db,
         data.name,
         data.email,
         data.password
     )
 
-    return {"message": "User created successfully"}
+    return {"message": "User created successfully. OTP sent to email."}
 
 
 @router.post("/login")
@@ -39,3 +47,27 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     )
 
     return {"token": token}
+
+
+@router.post("/verify-otp")
+def verify_user(email: str, otp: str, db: Session = Depends(get_db)):
+
+    verify_otp(db, email, otp)
+
+    return {"message": "Email verified successfully"}
+
+
+@router.post("/forgot-password")
+async def forgot(email: str, db: Session = Depends(get_db)):
+
+    await forgot_password(db, email)
+
+    return {"message": "OTP sent"}
+
+
+@router.post("/reset-password")
+def reset(email: str, otp: str, new_password: str, db: Session = Depends(get_db)):
+
+    reset_password(db, email, otp, new_password)
+
+    return {"message": "Password updated successfully"}
