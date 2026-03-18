@@ -21,12 +21,20 @@ export default function ResetPassword() {
       alert("Password reset successful");
       navigate("/login");
     } catch (err) {
-      if (err.response?.data?.detail) {
-        setError(err.response.data.detail);
-      } else {
-        setError("Reset failed");
-      }
+  if (err.response?.data?.detail) {
+
+    const detail = err.response.data.detail;
+
+    if (Array.isArray(detail)) {
+      setError(detail[0].msg);
+    } else {
+      setError(detail);
     }
+
+  } else {
+    setError("Reset failed");
+  }
+}
   };
 
   // ── New UI State ──

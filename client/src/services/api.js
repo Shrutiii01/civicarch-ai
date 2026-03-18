@@ -32,12 +32,10 @@ export const forgotPassword = (email) => {
 }
 
 export const resetPassword = (email, otp, newPassword) => {
-  return api.post("/auth/reset-password", null, {
-    params: {
-      email: email,
-      otp: otp,
-      new_password: newPassword
-    }
+  return api.post("/auth/reset-password", {
+    email: email,
+    otp: otp,
+    new_password: newPassword
   })
 }
 

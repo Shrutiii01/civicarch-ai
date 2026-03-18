@@ -3,8 +3,7 @@ from sqlalchemy.orm import Session
 
 from modules.db.database import SessionLocal
 
-from .auth_schema import SignupRequest, LoginRequest
-
+from .auth_schema import SignupRequest, LoginRequest, ResetPasswordRequest
 from .auth_service import (
     signup_user,
     login_user,
@@ -66,8 +65,8 @@ async def forgot(email: str, db: Session = Depends(get_db)):
 
 
 @router.post("/reset-password")
-def reset(email: str, otp: str, new_password: str, db: Session = Depends(get_db)):
+def reset(data: ResetPasswordRequest, db: Session = Depends(get_db)):
 
-    reset_password(db, email, otp, new_password)
+    reset_password(db, data.email, data.otp, data.new_password)
 
     return {"message": "Password updated successfully"}
