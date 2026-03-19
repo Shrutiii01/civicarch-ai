@@ -11,14 +11,19 @@ def generate_complaint_draft(translated_text, department, location):
     prompt = f"""
 You are an AI assistant helping citizens write formal civic complaints in India.
 
-Complaint:
-{translated_text}
+Complaint Facts:
+"{translated_text}"
 
 Department Responsible:
 {department}
 
 Location:
 {location}
+
+CRITICAL INSTRUCTIONS:
+1. Write a formal complaint letter based STRICTLY on the "Complaint Facts" provided above.
+2. DO NOT invent, hallucinate, or add any new details (like unauthorized construction, specific events, or building numbers) that are not present in the text. 
+3. If the facts are brief (e.g., just mentioning a pothole), keep the letter focused entirely on that specific issue.
 
 Generate a formal complaint letter in this format:
 
@@ -29,17 +34,16 @@ The Officer,
 {department}
 
 Subject:
-Short subject summarizing the complaint.
+Short subject summarizing the exact complaint.
 
 Respected Sir/Madam,
 
-Write a polite and clear explanation of the issue.
+Write a polite and clear explanation of the issue using ONLY the provided facts.
 
 Include a section:
 Details of the Issue:
-• point 1
-• point 2
-• point 3
+• [Fact 1]
+• [Fact 2]
 
 End with a request for action.
 

@@ -11,8 +11,11 @@ def create_complaint(db, user_id, text, location, pincode, category):
 
     # Step 1 – process complaint (translation already happens here)
     processed = process_complaint(text=text)
-
-    translated_text = processed["translated_text"]
+    
+    # Safely get the translated text. If it's None or empty, fallback to the original text!
+    translated_text = processed.get("translated_text")
+    if not translated_text or str(translated_text).strip() == "None":
+        translated_text = text
 
     # Step 2 – classify request
     request_type = classify_request(translated_text)

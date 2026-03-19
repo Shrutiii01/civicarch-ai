@@ -9,48 +9,57 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 def generate_rti_draft(translated_text, department, location):
 
     prompt = f"""
-You are an AI legal assistant helping citizens file RTI applications under the Right to Information Act, 2005 (India).
+Role: You are a Senior Legal Consultant specializing in Indian Administrative Law and the Right to Information Act, 2005.
 
-Citizen Request:
-{translated_text}
+Task: Draft a formal, precise, and legally enforceable RTI Application based on the following details:
 
-Department Concerned:
-{department}
+Citizen's Query: {translated_text}
 
-Location:
-{location}
+Department: {department}
 
-Generate a structured RTI application in this format:
+Location/Office: {location}
+
+Drafting Rules:
+
+Specific Period: Ensure the information requested asks for a specific date range (e.g., "From Jan 2023 to present") to avoid rejection on grounds of vagueness.
+
+Documentary Evidence: Use phrases like "Certified copies of," "File Notings," and "Action Taken Reports (ATR)" to get high-quality data.
+
+Statutory Compliance: Mention that the response must be provided within 30 days as per Section 7(1) of the Act.
+
+No Justification: Ensure the "Purpose" section remains concise. Legal Note: Under Section 6(2) of the RTI Act, an applicant is NOT required to give any reason for requesting information, but providing a brief context can sometimes help the PIO locate the file.
+
+Format:
 
 RTI APPLICATION
 
 To:
-The Public Information Officer
+The Central/State Public Information Officer (CPIO/SPIO)
 {department}
-
-Subject:
-Request for information under the RTI Act, 2005.
-
-Respected Sir/Madam,
-
-Write a formal RTI request asking for the required information.
-
-Include sections:
-
-1. Information Requested
-• point 1
-• point 2
-• point 3
-
-2. Purpose of Request
-
-End politely requesting the information under RTI Act 2005.
-
-Applicant Location:
 {location}
 
-Return only the formatted RTI application.
-"""
+Subject: Application for seeking information under Section 6(1) of the Right to Information Act, 2005.
+
+Respected Sir/Madam,
+I, a citizen of India, wish to seek the following information under the provisions of the RTI Act, 2005.
+
+1. Information Requested:
+• [Point-wise request based on {translated_text}]
+• [Request for certified copies of relevant registers/documents]
+• [Request for inspection of records if applicable]
+
+2. Context of Request:
+[Brief 1-2 sentence background based on {translated_text}]
+
+3. Declaration:
+I state that the information sought does not fall within the restrictions contained in Section 8 and 9 of the RTI Act and to the best of my knowledge it pertains to your office.
+
+4. Format of Information:
+I request you to provide the information in [Printed/Electronic/Certified Copy] format.
+
+Applicant Location: {location}
+Date: [Insert Current Date]
+Signature: [Your Name]"""
 
     completion = client.chat.completions.create(
         model="llama-3.1-8b-instant",
