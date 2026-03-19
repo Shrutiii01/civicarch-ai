@@ -25,7 +25,7 @@ function Login() {
       localStorage.setItem("token", token);
       
       alert("Login successful");
-      // navigate("/dashboard"); 
+      navigate("/complaint"); 
     } catch (err) {
       setError("Invalid credentials. Please try again.");
     }

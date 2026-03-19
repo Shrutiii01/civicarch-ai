@@ -69,6 +69,11 @@ function ComplaintPage() {
     }
   };
 
+  const handleLogout = () => {
+  localStorage.removeItem("token"); // 🔥 remove token
+  navigate("/", { replace: true }); // 🔥 redirect to landing page
+};
+
   return (
     <div style={{ padding: "40px", maxWidth: "700px", margin: "auto" }}>
 
@@ -158,6 +163,24 @@ function ComplaintPage() {
       >
         {loading ? "Processing..." : "Submit Complaint"}
       </button>
+
+       {/* 🔴 Logout Button */}
+    <button
+      onClick={handleLogout}
+      style={{
+        position: "absolute",
+        top: "20px",
+        right: "20px",
+        padding: "8px 14px",
+        background: "#ef4444",
+        color: "white",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer"
+      }}
+    >
+      Logout
+    </button>
 
     </div>
   );
