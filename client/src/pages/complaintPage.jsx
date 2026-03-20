@@ -16,7 +16,6 @@ function ComplaintPage() {
 
   // Handle image selection
   const handleImageChange = async (e) => {
-
     const file = e.target.files[0];
     if (!file) return;
 
@@ -28,13 +27,19 @@ function ComplaintPage() {
 
       const response = await processImage(file);
 
-      // If OCR extracted text exists
+      // Smartly update text: Append if user already typed, otherwise set new
       if (response.data.extracted_text) {
-        setText(response.data.extracted_text);
+        setText((prevText) => {
+          if (prevText.trim() !== "") {
+            return `${prevText}\n\n[Image Context]: ${response.data.extracted_text}`;
+          }
+          return response.data.extracted_text;
+        });
       }
 
     } catch (err) {
       console.error("Image processing failed", err);
+      alert("Failed to analyze image. You can still type your request manually.");
     } finally {
       setLoading(false);
     }
@@ -42,14 +47,13 @@ function ComplaintPage() {
 
   // Submit complaint
   const handleSubmit = async () => {
-
-    if (!text || !location || !pincode) {
-      alert("Please fill required fields");
+    // PREVENT JUNK TEXT (like a single dot)
+    if (!text || text.trim().length < 5 || !location || !pincode) {
+      alert("Please provide a proper description or wait for the image AI to finish reading.");
       return;
     }
 
     try {
-
       setLoading(true);
 
       const response = await submitComplaint({
@@ -67,6 +71,11 @@ function ComplaintPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // 🔥 remove token
+    navigate("/", { replace: true }); // 🔥 redirect to landing page
   };
 
   return (
@@ -146,17 +155,36 @@ function ComplaintPage() {
       {/* Submit Button */}
       <button
         onClick={handleSubmit}
+        disabled={loading} // 🔴 Prevents clicking while image is processing
         style={{
           marginTop: "30px",
           padding: "12px 20px",
-          background: "#2563eb",
+          background: loading ? "#9ca3af" : "#2563eb", // 🔴 Turns gray when loading
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
+          cursor: loading ? "not-allowed" : "pointer"
+        }}
+      >
+        {loading ? "Processing Image..." : "Submit Complaint"}
+      </button>
+
+       {/* 🔴 Logout Button */}
+      <button
+        onClick={handleLogout}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          padding: "8px 14px",
+          background: "#ef4444",
           color: "white",
           border: "none",
           borderRadius: "6px",
           cursor: "pointer"
         }}
       >
-        {loading ? "Processing..." : "Submit Complaint"}
+        Logout
       </button>
 
     </div>

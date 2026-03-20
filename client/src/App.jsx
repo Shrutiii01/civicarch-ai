@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import ProtectedRoute from "./components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/signup";
@@ -26,9 +26,23 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Complaint System Routes */}
-        <Route path="/complaint" element={<ComplaintPage />} />
-        <Route path="/result" element={<ResultPage />} />
+        <Route
+          path="/complaint"
+          element={
+            <ProtectedRoute>
+              <ComplaintPage />
+            </ProtectedRoute>
+          }
+        />
 
+        <Route
+          path="/result"
+          element={
+            <ProtectedRoute>
+              <ResultPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

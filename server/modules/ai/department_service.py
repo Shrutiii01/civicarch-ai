@@ -14,6 +14,10 @@ def detect_department(text: str) -> str:
 
     Identify the single most relevant government department responsible for resolving this issue. 
 
+    Routing Rules:
+    - If the text mentions potholes, road damage, or street repairs, you MUST choose "Public Works Department (PWD)" or "Municipal Corporation".
+    - If the text mentions land disputes, taxes, or illegal property definitions, choose "Revenue Department".
+
     Choose ONLY from the following exact department names:
     - Public Works Department (PWD)
     - Municipal Corporation
@@ -31,7 +35,6 @@ def detect_department(text: str) -> str:
 
     Output ONLY the exact department name from the list above. Do not include any other text, explanation, or punctuation.
     """
-
     completion = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[

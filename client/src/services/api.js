@@ -4,6 +4,17 @@ const api = axios.create({
   baseURL: "http://localhost:8000"
 })
 
+// Attach token to every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
 /* ------------------------
    AUTH APIs
 ------------------------- */
@@ -12,9 +23,24 @@ export const signup = (data) => {
   return api.post("/auth/signup", data)
 }
 
-export const login = (data) => {
-  return api.post("/auth/login", data)
-}
+export const login = async (data) => {
+  try {
+    const response = await api.post("/auth/login", data);
+    
+    console.log("RESPONSE DATA:", response.data);   // 👈 check payload
+
+    const token = response.data.token; // 🔥 adjust key if different
+    
+    console.log("TOKEN:", token); // 👈 check token
+
+    // Store token
+    localStorage.setItem("token", token);
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const verifyOTP = (email, otp) => {
   return api.post("/auth/verify-otp", null, {
