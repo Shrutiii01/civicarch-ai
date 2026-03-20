@@ -71,9 +71,13 @@ export const resetPassword = (email, otp, newPassword) => {
    COMPLAINT API
 ------------------------- */
 
-export const submitComplaint = (data) => {
-  return api.post("/complaints/submit", data)
-}
+export const submitComplaint = (formData) => {
+  return api.post("/complaints/submit", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 
 /* ------------------------
    IMAGE PROCESSING API

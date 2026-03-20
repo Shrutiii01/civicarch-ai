@@ -9,6 +9,7 @@ import ResetPassword from "./pages/ResetPassword";
 
 import ComplaintPage from "./pages/complaintPage";
 import ResultPage from "./pages/ResultPage";
+import Processing from "./pages/processing";
 
 function App() {
   return (
@@ -31,6 +32,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ComplaintPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/processing"
+          element={
+            <ProtectedRoute>
+              <Processing />
             </ProtectedRoute>
           }
         />
