@@ -7,32 +7,37 @@ from modules.ai.draft_service import generate_complaint_draft
 from modules.ai.rti_draft_service import generate_rti_draft
 
 
-def create_complaint(db, user_id, text, location, pincode, category):
+def create_complaint(db, user_id, text, location, pincode, category, image_text=None):
 
     # Step 1 – process complaint (translation already happens here)
     processed = process_complaint(text=text)
     
     # Safely get the translated text. If it's None or empty, fallback to the original text!
     translated_text = processed.get("translated_text")
-    if not translated_text or str(translated_text).strip() == "None":
+    if not translated_text or str(translated_text).strip().lower() in ["none", ""]:
         translated_text = text
 
+    final_input = translated_text
+
+    if image_text and image_text.strip():
+        final_input = f"{translated_text}\nAdditional details from image: {image_text}"    
+
     # Step 2 – classify request
-    request_type = classify_request(translated_text)
+    request_type = classify_request(final_input)
 
     # Step 3 – detect department
-    department = detect_department(translated_text)
+    department = detect_department(final_input)
 
     # Step 4 – generate draft
     if request_type == "complaint":
         draft = generate_complaint_draft(
-            translated_text,
+            final_input,
             department,
             location
         )
     else:
         draft = generate_rti_draft(
-            translated_text,
+            final_input,
             department,
             location
         )

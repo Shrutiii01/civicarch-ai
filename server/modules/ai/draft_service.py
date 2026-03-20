@@ -6,13 +6,13 @@ load_dotenv()
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def generate_complaint_draft(translated_text, department, location):
+def generate_complaint_draft(final_input, department, location):
 
     prompt = f"""
 You are an AI assistant helping citizens write formal civic complaints in India.
 
 Complaint Facts:
-"{translated_text}"
+"{final_input}"
 
 Department Responsible:
 {department}

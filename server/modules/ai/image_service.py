@@ -26,15 +26,20 @@ async def process_image(image):
     # Encode the saved image to base64
     base64_image = encode_image(file_path)
 
-    # The updated Vision Prompt
     prompt = """
-    You are an AI assistant for a civic grievance platform.
-    Analyze this image carefully.
-    - If it is a document, extract and return all the text.
-    - If it is a photo of a physical civic issue (e.g., pothole, broken pipe, uncollected garbage), write a clear, first-person complaint statement. For example: "I am reporting a severe civic issue regarding a large pothole at this location that requires immediate repair."
-    
-    Return ONLY the extracted text or the generated complaint statement. Do not include introductory phrases.
-    """
+You are an AI assistant for a civic grievance platform.
+
+Analyze the uploaded image carefully:
+
+1. If it is a document or draft (handwritten or typed):
+   - Extract ALL text exactly as it appears.
+
+2. If it is an image of a civic issue (e.g., pothole, garbage, water leakage):
+   - Describe the issue briefly in simple English (one sentence only).
+
+Return ONLY the text.
+Do not add explanations or extra words.
+"""
 
     try:
         completion = client.chat.completions.create(
