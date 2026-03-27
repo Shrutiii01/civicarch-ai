@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from groq import Groq
 from dotenv import load_dotenv
 
@@ -6,7 +7,10 @@ load_dotenv()
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def generate_complaint_draft(final_input, department, location):
+# 🔥 Notice the two new arguments added here to match complaint_service.py!
+def generate_complaint_draft(final_input, department, location, user_name, user_email):
+    
+    current_date = datetime.now().strftime("%B %d, %Y")
 
     prompt = f"""
 You are an AI assistant helping citizens write formal civic complaints in India.
@@ -19,6 +23,9 @@ Department Responsible:
 
 Location:
 {location}
+
+Applicant Name: {user_name}
+Applicant Email: {user_email}
 
 CRITICAL INSTRUCTIONS:
 1. Write a formal complaint letter based STRICTLY on the "Complaint Facts" provided above.
@@ -38,6 +45,8 @@ Short subject summarizing the exact complaint.
 
 Respected Sir/Madam,
 
+I, {user_name}, a resident of {location}, write to bring the following issue to your attention:
+
 Write a polite and clear explanation of the issue using ONLY the provided facts.
 
 Include a section:
@@ -45,10 +54,16 @@ Details of the Issue:
 • [Fact 1]
 • [Fact 2]
 
-End with a request for action.
+End with a request for prompt action.
 
-Citizen Location:
-{location}
+Applicant Details:
+Name: {user_name}
+Email: {user_email}
+Location: {location}
+Date: {current_date}
+
+Signature:
+(Digitally signed by {user_name})
 
 Return only the formatted letter.
 """

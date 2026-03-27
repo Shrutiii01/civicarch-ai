@@ -6,7 +6,7 @@ import Signup from "./pages/signup";
 import VerifyOTP from "./pages/VerifyOTP";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-
+import HistoryPage from "./pages/HistoryPage";
 import ComplaintPage from "./pages/complaintPage";
 import ResultPage from "./pages/ResultPage";
 import Processing from "./pages/processing";
@@ -52,6 +52,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute>
+              <HistoryPage />
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
     </Router>
   );

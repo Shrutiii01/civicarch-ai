@@ -95,4 +95,24 @@ export const processImage = (imageFile) => {
   })
 }
 
+/* ------------------------
+   COMPLAINT API
+------------------------- */
+
+export const saveDraftComplaint = (formData) => {
+  return api.post("/complaints/draft", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const getComplaintHistory = () => {
+  return api.get("/complaints/history");
+};
+
+export const getComplaintById = (complaintId) => {
+  return api.get(`/complaints/${complaintId}`);
+};
+
 export default api

@@ -7,7 +7,7 @@ function ResultPage() {
 
   // State for the editable draft
   const [draft, setDraft] = useState(
-    data?.draft || data?.generated_draft || data?.complaint_draft || ""
+    data?.draft_text || data?.draft || data?.generated_draft || data?.complaint_draft || ""
   );
 
   // Scroll to top on load
