@@ -5,18 +5,30 @@ from modules.ai.department_service import detect_department
 from modules.ai.classification_service import classify_request
 from modules.ai.draft_service import generate_complaint_draft
 from modules.ai.rti_draft_service import generate_rti_draft
-from modules.ai.grievance_service import generate_grievance_draft # Added new service import
+from modules.ai.grievance_service import generate_grievance_draft
 
 # Full updated create_complaint function
-def create_complaint(db, user_id, user_name, user_email, text, location, pincode, category, image_text=None, status="DRAFT"):
+def create_complaint(db, user_id, user_name, user_email, text, location, pincode, category, image_text=None, audio_text=None, document_text=None, status="DRAFT"):
+    
+    # 🔥 Integrate audio and document text into the main text if provided
+    base_text = text if text else ""
+    
+    if audio_text and audio_text.strip():
+        if base_text and base_text.strip():
+            base_text = f"{base_text}\n[Voice Note Transcription]: {audio_text}"
+        else:
+            base_text = audio_text
+            
+    if document_text and document_text.strip():
+        base_text = f"{base_text}\n[Context from Uploaded PDF]: {document_text}"
 
     # Step 1 – process complaint (translation)
-    processed = process_complaint(text=text)
+    processed = process_complaint(text=base_text)
     
     # Safely get the translated text fallback
     translated_text = processed.get("translated_text")
     if not translated_text or str(translated_text).strip().lower() in ["none", ""]:
-        translated_text = text
+        translated_text = base_text
 
     final_input = translated_text
 
@@ -38,7 +50,7 @@ def create_complaint(db, user_id, user_name, user_email, text, location, pincode
             user_name,
             user_email
         )
-    elif request_type == "grievance": # Added Grievance Routing
+    elif request_type == "grievance":
         draft = generate_grievance_draft(
             final_input,
             department,
@@ -46,7 +58,7 @@ def create_complaint(db, user_id, user_name, user_email, text, location, pincode
             user_name,
             user_email
         )
-    else: # This handles "information_request" (RTI)
+    else: 
         draft = generate_rti_draft(
             final_input,
             department,
@@ -58,7 +70,7 @@ def create_complaint(db, user_id, user_name, user_email, text, location, pincode
     # Step 5 – create database object
     complaint = Complaint(
         user_id=user_id,
-        original_text=processed.get("original_text", text),
+        original_text=processed.get("original_text", base_text),
         translated_text=translated_text,
         location=location,
         pincode=pincode,
@@ -76,7 +88,7 @@ def create_complaint(db, user_id, user_name, user_email, text, location, pincode
     db.refresh(complaint)
 
     return {
-        "complaint_id": str(complaint.id), # Converted to string for consistent JSON response
+        "complaint_id": str(complaint.id),
         "category": category,
         "department": department,
         "draft": draft,

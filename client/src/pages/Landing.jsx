@@ -176,6 +176,7 @@ const Landing = () => {
                     <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${heroImg}')` }}></div>
                     <div className="absolute inset-0 bg-[#1A1A1A]/20"></div>
 
+                    
                 </div>
             </section>
 
