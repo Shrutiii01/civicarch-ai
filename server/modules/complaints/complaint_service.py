@@ -6,8 +6,8 @@ from modules.ai.classification_service import classify_request
 from modules.ai.draft_service import generate_complaint_draft
 from modules.ai.rti_draft_service import generate_rti_draft
 
-
-def create_complaint(db, user_id, text, location, pincode, category, image_text=None):
+# Notice user_name and user_email added to the function signature
+def create_complaint(db, user_id, user_name, user_email, text, location, pincode, category, image_text=None, status="DRAFT"):
 
     # Step 1 – process complaint (translation already happens here)
     processed = process_complaint(text=text)
@@ -28,24 +28,28 @@ def create_complaint(db, user_id, text, location, pincode, category, image_text=
     # Step 3 – detect department
     department = detect_department(final_input)
 
-    # Step 4 – generate draft
+    # Step 4 – generate draft with user details!
     if request_type == "complaint":
         draft = generate_complaint_draft(
             final_input,
             department,
-            location
+            location,
+            user_name,   # Passed to Groq
+            user_email   # Passed to Groq
         )
     else:
         draft = generate_rti_draft(
             final_input,
             department,
-            location
+            location,
+            user_name,   # Passed to Groq
+            user_email   # Passed to Groq
         )
-
+    
     # Step 5 – create complaint object
     complaint = Complaint(
         user_id=user_id,
-        original_text=processed["original_text"],
+        original_text=processed.get("original_text", text),
         translated_text=translated_text,
         location=location,
         pincode=pincode,
@@ -54,7 +58,8 @@ def create_complaint(db, user_id, text, location, pincode, category, image_text=
         request_type=request_type,
         complaint_draft=draft,
         latitude=None,
-        longitude=None
+        longitude=None,
+        status=status # 🔥 Fixed: Now uses the status passed from the route (DRAFT or SUBMITTED)
     )
 
     db.add(complaint)

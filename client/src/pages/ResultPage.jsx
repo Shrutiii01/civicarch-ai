@@ -11,7 +11,7 @@ function ResultPage() {
 
   // State for the editable draft - connected to the textarea
   const [draft, setDraft] = useState(
-    data?.draft || data?.generated_draft || data?.complaint_draft || ""
+    data?.draft_text || data?.draft || data?.generated_draft || data?.complaint_draft || ""
   );
 
   const [isDownloading, setIsDownloading] = useState(false);
