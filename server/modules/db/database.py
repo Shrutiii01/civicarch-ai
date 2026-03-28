@@ -1,34 +1,26 @@
 import os
+import uuid
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
-# Load .env file
 load_dotenv()
 
-# Get DATABASE URL
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Debug (remove after testing)
-print("DATABASE_URL:", DATABASE_URL)
-
-# Create engine
+# Improved engine for Supabase stability
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True
+    pool_pre_ping=True,  # Checks connection health before use
+    pool_recycle=1800,   # Recycle connections every 30 mins
+    connect_args={
+        "connect_timeout": 10  # Timeout after 10s if network is down
+    }
 )
 
-# Session
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
-
-# Base
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# Dependency (for FastAPI routes)
 def get_db():
     db = SessionLocal()
     try:
