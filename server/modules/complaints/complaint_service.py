@@ -5,14 +5,15 @@ from modules.ai.department_service import detect_department
 from modules.ai.classification_service import classify_request
 from modules.ai.draft_service import generate_complaint_draft
 from modules.ai.rti_draft_service import generate_rti_draft
+from modules.ai.grievance_service import generate_grievance_draft # Added new service import
 
-# Notice user_name and user_email added to the function signature
+# Full updated create_complaint function
 def create_complaint(db, user_id, user_name, user_email, text, location, pincode, category, image_text=None, status="DRAFT"):
 
-    # Step 1 – process complaint (translation already happens here)
+    # Step 1 – process complaint (translation)
     processed = process_complaint(text=text)
     
-    # Safely get the translated text. If it's None or empty, fallback to the original text!
+    # Safely get the translated text fallback
     translated_text = processed.get("translated_text")
     if not translated_text or str(translated_text).strip().lower() in ["none", ""]:
         translated_text = text
@@ -22,31 +23,39 @@ def create_complaint(db, user_id, user_name, user_email, text, location, pincode
     if image_text and image_text.strip():
         final_input = f"{translated_text}\nAdditional details from image: {image_text}"    
 
-    # Step 2 – classify request
+    # Step 2 – classify request (Now identifies: complaint, information_request, or grievance)
     request_type = classify_request(final_input)
 
     # Step 3 – detect department
     department = detect_department(final_input)
 
-    # Step 4 – generate draft with user details!
+    # Step 4 – generate draft with user details based on the identified request_type
     if request_type == "complaint":
         draft = generate_complaint_draft(
             final_input,
             department,
             location,
-            user_name,   # Passed to Groq
-            user_email   # Passed to Groq
+            user_name,
+            user_email
         )
-    else:
+    elif request_type == "grievance": # Added Grievance Routing
+        draft = generate_grievance_draft(
+            final_input,
+            department,
+            location,
+            user_name,
+            user_email
+        )
+    else: # This handles "information_request" (RTI)
         draft = generate_rti_draft(
             final_input,
             department,
             location,
-            user_name,   # Passed to Groq
-            user_email   # Passed to Groq
+            user_name,
+            user_email
         )
     
-    # Step 5 – create complaint object
+    # Step 5 – create database object
     complaint = Complaint(
         user_id=user_id,
         original_text=processed.get("original_text", text),
@@ -59,7 +68,7 @@ def create_complaint(db, user_id, user_name, user_email, text, location, pincode
         complaint_draft=draft,
         latitude=None,
         longitude=None,
-        status=status # 🔥 Fixed: Now uses the status passed from the route (DRAFT or SUBMITTED)
+        status=status 
     )
 
     db.add(complaint)
@@ -67,8 +76,9 @@ def create_complaint(db, user_id, user_name, user_email, text, location, pincode
     db.refresh(complaint)
 
     return {
-        "complaint_id": complaint.id,
+        "complaint_id": str(complaint.id), # Converted to string for consistent JSON response
         "category": category,
         "department": department,
-        "draft": draft
+        "draft": draft,
+        "request_type": request_type
     }

@@ -14,20 +14,13 @@ def classify_request(translated_text):
     print("="*40 + "\n")
 
     prompt = f"""
-You are an AI system that classifies citizen requests.
+Classify the following text into ONE of these THREE categories:
+1. complaint - Reporting a physical civic issue (potholes, garbage, broken lights).
+2. information_request - Asking for documents or budget details via RTI.
+3. grievance - Reporting a service delay, lack of response from officials, or administrative failure.
 
-Classify the following text into ONE category:
-
-1. complaint – reporting a physical civic issue (e.g., potholes, water leaks, garbage, damaged infrastructure) that needs fixing or intervention.
-2. information_request – asking for documents, data, budget details, or policy information via an RTI.
-
-Text:
-{translated_text}
-
-Return ONLY one word:
-complaint
-or
-information_request
+Text: {translated_text}
+Return ONLY one word: complaint, information_request, or grievance.
 """
 
     completion = client.chat.completions.create(
