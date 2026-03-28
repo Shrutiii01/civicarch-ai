@@ -5,13 +5,13 @@ import {
     Search, Network, FileText, DoorOpen, BarChart3, Scale,
     TrendingUp, ShieldCheck, Languages, FileSearch,
     Play, ChevronDown, Send, Share2, Globe, Landmark,
-    ArrowRight, MoreVertical
+    ArrowRight, MoreVertical, Mic, Cpu, CheckSquare
 } from 'lucide-react';
 
 const Landing = () => {
     // ── Backend Connection State ──
     const [message, setMessage] = useState("Connecting to server...");
-    
+
     // ── UI State ──
     const [openFaq, setOpenFaq] = useState(null);
     const [text, setText] = useState('');
@@ -60,13 +60,36 @@ const Landing = () => {
 
     // ── Static Data ──
     const steps = [
-        { icon: Search, title: 'Intent Discovery', desc: 'AI-mapped citizen rights and objectives.' },
-        { icon: Network, title: 'Bureaucratic Mapping', desc: 'Precise department and officer targeting.' },
-        { icon: FileText, title: 'RTI Generation', desc: 'Legally fortified draft optimization.' },
-        { icon: DoorOpen, title: 'Filing Gateway', desc: 'Direct submission to national portals.' },
-        { icon: BarChart3, title: 'Intelligent Tracking', desc: 'Real-time lifecycle monitoring.' },
-        { icon: Scale, title: 'Outcome Analysis', desc: 'Impact scoring and legal next-steps.' },
-    ];
+        {
+            icon: Search,
+            title: 'Identify Issue',
+            desc: 'Select the specific civic or administrative problem you are facing.'
+        },
+        {
+            icon: Mic,
+            title: 'Multi-Modal Input',
+            desc: 'Provide evidence and details via text, voice, or document uploads.'
+        },
+        {
+            icon: Cpu,
+            title: 'AI Structuring',
+            desc: 'Our engine transforms your raw data into legally fortified formats.'
+        },
+        {
+            icon: CheckSquare,
+            title: 'Verification',
+            desc: 'Review, edit, and sign your generated application for compliance.'
+        },
+        {
+            icon: Send,
+            title: 'Direct Submission',
+            desc: 'Instant routing to the precisely targeted government department.'
+        },
+        {
+            icon: BarChart3,
+            title: 'Lifecycle Tracking',
+            desc: 'Real-time monitoring of your application status and impact scoring.'
+        }];
 
     const capabilities = [
         { icon: TrendingUp, title: 'Trend Detection', desc: 'Identifying systematic administrative delays across 400+ government departments.' },
@@ -88,45 +111,43 @@ const Landing = () => {
 
     return (
         <div className="bg-[#f8f7f6] font-sans text-[#1A1A1A] antialiased page-transition">
-            
+
 
             {/* ── Navbar ── */}
-           <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
-    {/* Changed max-w-7xl to w-full and increased horizontal padding (px-8) */}
-    <div className="w-full px-8 md:px-12 h-20 flex items-center justify-between">
-        
-        {/* LEFT CORNER: Logo and Branding */}
-        <div className="flex items-center gap-3">
-            <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
-                <Landmark size={24} />
-            </div>
-            <div>
-                <h1 className="font-serif text-xl font-bold leading-none">CivicArch AI</h1>
-                <p className="text-[10px] uppercase tracking-tighter text-stone-500 font-bold">Institutional RTI Infrastructure</p>
-            </div>
-        </div>
+            <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
+                {/* Changed max-w-7xl to max-w-full and increased horizontal padding (px-10) */}
+                <div className="max-w-full mx-auto px-10 h-20 flex items-center justify-between">
 
-        {/* RIGHT CORNER: Grouped Links and Button */}
-        <div className="flex items-center gap-8">
-            <div className="hidden lg:flex items-center gap-8">
-                <Link to="/about" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">About us </Link>
-                <a className="text-sm font-semibold hover:text-[#e9671c] transition-colors cursor-pointer" href="#how-it-works">How It Works</a>
-                <Link to="/heatmap" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Heatmap</Link>
-                 </div>
-            
-            <Link to="/login" className="bg-[#e9671c] hover:bg-[#C0392B] text-white px-6 py-2.5 rounded-sm font-bold text-sm tracking-wide transition-all shadow-md whitespace-nowrap">
-                LOGIN / START FILING
-            </Link>
-        </div>
-        
-    </div>
-</nav>
+                    {/* Left Side: Logo */}
+                    <div className="flex items-center gap-3">
+                        <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
+                            <Landmark size={24} />
+                        </div>
+                        <div>
+                            <h1 className="font-serif text-xl font-bold leading-none">JanSahaay</h1>
+                        </div>
+                    </div>
+
+                    {/* Center: Links (Will naturally stay centered-ish between the ends) */}
+                    <div className="hidden lg:flex items-center gap-10">
+                        <Link to="/" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Home</Link>
+                        <Link to="/aboutus" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">About us</Link>
+                        <Link to="/howitwork" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">How It Works</Link>
+                        <Link to="/heatmap" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Heatmap</Link>
+                    </div>
+
+                    {/* Right Side: Button */}
+                    <Link to="/login" className="bg-[#e9671c] hover:bg-[#C0392B] text-white px-6 py-2.5 rounded-sm font-bold text-sm tracking-wide transition-all shadow-md">
+                        LOGIN / START FILING
+                    </Link>
+                </div>
+            </nav>
 
             {/* ── Hero Section ── */}
             <section className="relative h-[650px] flex items-stretch overflow-hidden bg-[#FDF6ED]">
                 <div className="w-full lg:w-7/12 bg-gradient-to-br from-[#e9671c] via-[#e9671c] to-[#C0392B] relative z-10 flex items-center px-12 lg:px-24 hero-diagonal">
                     <div className="max-w-xl text-white">
-                        
+
                         {/* Status Indicators */}
                         <div className="flex flex-wrap gap-3 mb-8">
                             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1 text-white/90 text-xs font-bold tracking-widest uppercase">
@@ -136,12 +157,8 @@ const Landing = () => {
                                 </span>
                                 National Compliance Active
                             </div>
-                            
-                            {/* Integrated Backend Message Here */}
-                            <div className="inline-flex items-center gap-2 bg-black/20 border border-white/10 rounded-full px-4 py-1 text-white/90 text-xs font-bold tracking-widest uppercase">
-                                <span className={`h-2 w-2 rounded-full ${message === 'Connecting to server...' || message === 'Server connection failed' ? 'bg-red-400' : 'bg-green-400'}`}></span>
-                                System: {message}
-                            </div>
+
+
                         </div>
 
                         <h2 className="font-serif text-5xl lg:text-7xl leading-[1.1] mb-6 font-black tracking-tight min-h-[160px]">
@@ -153,19 +170,12 @@ const Landing = () => {
                         <p className="text-white/80 text-lg mb-10 max-w-md leading-relaxed font-light">
                             Empowering citizens with secure, AI-driven transparency and professional grade legal infrastructure for the digital age.
                         </p>
-                        <div className="flex gap-4">
-                            <Link to="/login" className="bg-[#1A1A1A] text-white px-8 py-4 font-bold text-sm tracking-widest hover:bg-black transition-colors uppercase">
-                                Initialize Application
-                            </Link>
-                            <button className="border border-white/30 text-white px-8 py-4 font-bold text-sm tracking-widest hover:bg-white/10 transition-colors uppercase">
-                                View Protocols
-                            </button>
-                        </div>
                     </div>
                 </div>
                 <div className="absolute right-0 top-0 w-full lg:w-1/2 h-full z-0">
                     <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${heroImg}')` }}></div>
                     <div className="absolute inset-0 bg-[#1A1A1A]/20"></div>
+
                     
                 </div>
             </section>

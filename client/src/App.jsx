@@ -10,6 +10,9 @@ import HistoryPage from "./pages/HistoryPage";
 import ComplaintPage from "./pages/complaintPage";
 import ResultPage from "./pages/ResultPage";
 import Processing from "./pages/processing";
+import Dashboard from "./pages/Dashboard";
+import Howitwork from "./pages/Howitwork";
+import Aboutus from "./pages/aboutus";
 import { Toaster } from 'sonner';
 
 function App() {
@@ -29,12 +32,23 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
+          <Route path="/howitwork" element={<Howitwork />} />
+          <Route path="/aboutus" element={<Aboutus />} />
+
           {/* Complaint System Routes */}
           <Route
             path="/complaint"
             element={
               <ProtectedRoute>
                 <ComplaintPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
               </ProtectedRoute>
             }
           />
