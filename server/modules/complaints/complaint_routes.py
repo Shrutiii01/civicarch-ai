@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form
+import os
+import shutil
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
 from sqlalchemy.orm import Session
 from modules.auth.auth_utils import get_current_user
 from modules.db.database import SessionLocal
@@ -8,8 +10,13 @@ from modules.db.models import User
 from .complaint_schema import ComplaintResponse
 from .complaint_service import create_complaint
 from modules.ai.image_service import process_image 
+from modules.ai.audio_service import process_audio # 🔥 NEW: Whisper Audio Service
 
 router = APIRouter(prefix="/complaints")
+
+# Ensure uploads directory exists for images and audio files
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db():
     db = SessionLocal()
@@ -21,10 +28,11 @@ def get_db():
 
 @router.post("/submit")
 async def submit_complaint(
-    text: str = Form(...),
+    text: str = Form(""), # Made optional default to empty string so audio_text can be used alone
     location: str = Form(...),
     pincode: str = Form(...),
     category: str = Form(""),
+    audio_text: str = Form(None), # 🔥 Accept audio transcription text
     image: UploadFile = File(None),
 
     db: Session = Depends(get_db),
@@ -49,6 +57,7 @@ async def submit_complaint(
         pincode=pincode,
         category=category,
         image_text=image_text,
+        audio_text=audio_text,         # 🔥 Passed to service
         status="SUBMITTED"             # Final status
     )
 
@@ -62,10 +71,11 @@ async def submit_complaint(
 
 @router.post("/draft")
 async def save_draft(
-    text: str = Form(...),
+    text: str = Form(""), # Made optional default to empty string
     location: str = Form(...),
     pincode: str = Form(...),
     category: str = Form(""),
+    audio_text: str = Form(None), # 🔥 Accept audio transcription text
     image: UploadFile = File(None),
 
     db: Session = Depends(get_db),
@@ -90,6 +100,7 @@ async def save_draft(
         pincode=pincode,
         category=category,
         image_text=image_text,
+        audio_text=audio_text,         # 🔥 Passed to service
         status="DRAFT"                 # Draft status
     )
 
@@ -121,3 +132,46 @@ def get_complaint_history(
         "submitted_complaints": [ComplaintResponse.from_orm(c) for c in submitted],
         "draft_complaints": [ComplaintResponse.from_orm(c) for c in drafts]
     }
+
+# 🔥 NEW: Audio Processing Route
+@router.post("/upload-audio")
+async def upload_audio_to_text(audio_file: UploadFile = File(...)):
+    try:
+        # 1. Save the incoming audio file temporarily
+        file_path = f"{UPLOAD_FOLDER}/{audio_file.filename}"
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(audio_file.file, buffer)
+            
+        # 2. Send it to the Groq Whisper service
+        translated_english_text = process_audio(file_path)
+        
+        # 3. Clean up the file so the server doesn't get clogged with audio
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            
+        # 4. Return the translated text to the React frontend
+        return {"text": translated_english_text}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 🔥 LOUD ERROR VERSION: Standalone Image Processing Route
+@router.post("/process-image")
+async def api_process_image(image: UploadFile = File(...)):
+    try:
+        # Calls the Groq Vision service
+        result = await process_image(image)
+        
+        # If Groq failed, send the EXACT Groq error to the frontend
+        if "error" in result:
+            raise HTTPException(status_code=500, detail=f"GROQ AI ERROR: {result['error']}")
+            
+        return result
+        
+    except Exception as e:
+        # Force the terminal to print the full red crash report
+        import traceback
+        traceback.print_exc()
+        
+        # Send the EXACT Python error to your browser's Network tab
+        raise HTTPException(status_code=500, detail=f"PYTHON ERROR: {str(e)}")

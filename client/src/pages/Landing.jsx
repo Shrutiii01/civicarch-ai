@@ -88,43 +88,39 @@ const Landing = () => {
 
     return (
         <div className="bg-[#f8f7f6] font-sans text-[#1A1A1A] antialiased page-transition">
-            {/* ── Top Government Bar ── */}
-            <div className="bg-[#1A1A1A] text-white/70 text-[11px] uppercase tracking-widest py-2 px-6 flex justify-between items-center border-b border-white/10 hidden md:flex">
-                <div className="flex gap-6">
-                    <a className="hover:text-[#e9671c] transition-colors" href="#india">india.gov.in</a>
-                    <a className="hover:text-[#e9671c] transition-colors" href="#portal">National Portal of India</a>
-                    <a className="hover:text-[#e9671c] transition-colors" href="#meity">Ministry of Electronics & IT</a>
-                </div>
-                <div className="flex gap-4">
-                    <span>Language: English</span>
-                    <span>Accessibility Support</span>
-                </div>
-            </div>
+            
 
             {/* ── Navbar ── */}
-            <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-stone-200 shadow-sm">
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
-                            <Landmark size={24} />
-                        </div>
-                        <div>
-                            <h1 className="font-serif text-xl font-bold leading-none">CivicArch AI</h1>
-                            <p className="text-[10px] uppercase tracking-tighter text-stone-500 font-bold">Institutional RTI Infrastructure</p>
-                        </div>
-                    </div>
-                    <div className="hidden lg:flex items-center gap-10">
-                        <Link to="/" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Home</Link>
-                        <a className="text-sm font-semibold hover:text-[#e9671c] transition-colors cursor-pointer" href="#how-it-works">How It Works</a>
-                        <Link to="/login" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">File RTI</Link>
-                        <Link to="/heatmap" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Heatmap</Link>
-                        <a className="text-sm font-semibold hover:text-[#e9671c] transition-colors cursor-pointer" href="#dashboard">Dashboard</a>
-                    </div>
-                    <Link to="/login" className="bg-[#e9671c] hover:bg-[#C0392B] text-white px-6 py-2.5 rounded-sm font-bold text-sm tracking-wide transition-all shadow-md">
-                        LOGIN / START FILING
-                    </Link>
-                </div>
-            </nav>
+           <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
+    {/* Changed max-w-7xl to w-full and increased horizontal padding (px-8) */}
+    <div className="w-full px-8 md:px-12 h-20 flex items-center justify-between">
+        
+        {/* LEFT CORNER: Logo and Branding */}
+        <div className="flex items-center gap-3">
+            <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
+                <Landmark size={24} />
+            </div>
+            <div>
+                <h1 className="font-serif text-xl font-bold leading-none">CivicArch AI</h1>
+                <p className="text-[10px] uppercase tracking-tighter text-stone-500 font-bold">Institutional RTI Infrastructure</p>
+            </div>
+        </div>
+
+        {/* RIGHT CORNER: Grouped Links and Button */}
+        <div className="flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-8">
+                <Link to="/about" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">About us </Link>
+                <a className="text-sm font-semibold hover:text-[#e9671c] transition-colors cursor-pointer" href="#how-it-works">How It Works</a>
+                <Link to="/heatmap" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Heatmap</Link>
+                 </div>
+            
+            <Link to="/login" className="bg-[#e9671c] hover:bg-[#C0392B] text-white px-6 py-2.5 rounded-sm font-bold text-sm tracking-wide transition-all shadow-md whitespace-nowrap">
+                LOGIN / START FILING
+            </Link>
+        </div>
+        
+    </div>
+</nav>
 
             {/* ── Hero Section ── */}
             <section className="relative h-[650px] flex items-stretch overflow-hidden bg-[#FDF6ED]">
@@ -170,13 +166,7 @@ const Landing = () => {
                 <div className="absolute right-0 top-0 w-full lg:w-1/2 h-full z-0">
                     <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${heroImg}')` }}></div>
                     <div className="absolute inset-0 bg-[#1A1A1A]/20"></div>
-                    <div className="absolute top-20 right-20 bg-white/85 backdrop-blur-md p-6 rounded-lg shadow-2xl flex flex-col items-center min-w-[160px] border border-orange-500/10 scale-110">
-                        <span className="text-stone-500 text-[10px] uppercase font-bold tracking-widest mb-1">Compliance Score</span>
-                        <div className="text-[#e9671c] text-4xl font-serif font-black italic">9.2<span className="text-stone-400 text-xl font-normal not-italic">/10</span></div>
-                        <div className="w-full h-1.5 bg-stone-200 mt-4 rounded-full overflow-hidden">
-                            <div className="bg-[#e9671c] h-full w-[92%]"></div>
-                        </div>
-                    </div>
+                    
                 </div>
             </section>
 
