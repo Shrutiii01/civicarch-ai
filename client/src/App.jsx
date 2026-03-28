@@ -10,7 +10,6 @@ import HistoryPage from "./pages/HistoryPage";
 import ComplaintPage from "./pages/complaintPage";
 import ResultPage from "./pages/ResultPage";
 import Processing from "./pages/processing";
-
 import { Toaster } from 'sonner';
 
 function App() {
