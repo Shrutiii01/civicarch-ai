@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const api = axios.create({
-  baseURL: "http://localhost:8000"
+  baseURL: "http://127.0.0.1:8000"
 })
 
 // Attach token to every request
@@ -88,7 +88,7 @@ export const processImage = (imageFile) => {
   const formData = new FormData()
   formData.append("image", imageFile)
 
-  return api.post("/ai/process-image", formData, {
+  return api.post("/complaints/process-image", formData, {
     headers: {
       "Content-Type": "multipart/form-data"
     }
@@ -116,3 +116,7 @@ export const getComplaintById = (complaintId) => {
 };
 
 export default api
+
+export const classifyIssue = (text) => {
+  return api.post("/complaints/classify", { text: text });
+};

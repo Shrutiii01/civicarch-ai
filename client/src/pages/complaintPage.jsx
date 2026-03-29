@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { submitComplaint, processImage } from "../services/api";
 
@@ -28,7 +29,89 @@ function ComplaintPage() {
     fetchUser();
   }, []);
 
-  // Handle image selection (Kept from existing logic)
+  // 🔥 NEW: Audio Recording States and Refs
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+
+  // 🔥 NEW: Start Recording Function
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        stream.getTracks().forEach((track) => track.stop()); // Turn off mic indicator
+        await handleAudioUpload(audioBlob);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      alert("Microphone access denied. Please allow microphone permissions in your browser.");
+    }
+  };
+
+  // 🔥 NEW: Stop Recording Function
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  // 🔥 NEW: Upload Audio to Backend
+  const handleAudioUpload = async (audioBlob) => {
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("audio_file", audioBlob, "voice_note.webm");
+
+      const token = localStorage.getItem("token");
+
+      // Sending audio to your FastAPI Whisper route
+      const response = await fetch("http://localhost:8000/complaints/upload-audio", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}` // Included in case you lock down the route later
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload audio");
+      }
+
+      const data = await response.json();
+
+      // Smartly append the transcribed text to the textbox
+      if (data.text) {
+        setText((prevText) => {
+          if (prevText.trim() !== "") {
+            return `${prevText}\n[Voice Note]: ${data.text}`;
+          }
+          return data.text;
+        });
+      }
+    } catch (err) {
+      console.error("Audio processing failed", err);
+      alert("Failed to process your voice note.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle image selection
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -40,7 +123,6 @@ function ComplaintPage() {
       setLoading(true);
       const response = await processImage(file);
 
-      // Smartly update text: Append if user already typed, otherwise set new
       if (response.data.extracted_text) {
         setText((prevText) => {
           if (prevText.trim() !== "") {
@@ -50,17 +132,21 @@ function ComplaintPage() {
         });
       }
     } catch (err) {
-      console.error("Image processing failed", err);
-      alert("Failed to analyze image. You can still type your request manually.");
+      // 🔥 NEW: Grab the exact secret error message sent by FastAPI
+      const exactError = err.response?.data?.detail || err.message;
+
+      console.error("🔥 EXACT AI ERROR:", exactError);
+      alert(`Server Error: ${exactError}`);
+
     } finally {
       setLoading(false);
     }
   };
 
-  // Submit complaint (Kept from existing logic)
+  // Submit complaint
   const handleSubmit = async () => {
     if (!text || text.trim().length < 5 || !location || !pincode) {
-      alert("Please provide a proper description or wait for the image AI to finish reading.");
+      alert("Please provide a proper description or wait for the AI to finish reading.");
       return;
     }
 
@@ -74,12 +160,10 @@ function ComplaintPage() {
       formData.append("category", category);
 
       if (image) {
-        formData.append("image", image); // 🔥 IMPORTANT
+        formData.append("image", image);
       }
 
       const response = await submitComplaint(formData);
-
-      // Navigate to result page and pass the API response data
       navigate("/processing", { state: response.data });
     } catch (error) {
       console.error("Complaint submission failed", error);
@@ -89,10 +173,9 @@ function ComplaintPage() {
     }
   };
 
-  // Logout Logic (Kept from existing logic)
   const handleLogout = () => {
-    localStorage.removeItem("token"); // 🔥 remove token
-    navigate("/", { replace: true }); // 🔥 redirect to landing page
+    localStorage.removeItem("token");
+    navigate("/", { replace: true });
   };
 
   const displayText = text.replace(/\[Image Context\]:.*/gs, "");
@@ -121,14 +204,13 @@ function ComplaintPage() {
           <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
             <span className="material-symbols-outlined">notifications</span>
           </button>
-          <div 
+          <div
             onClick={() => navigate("/profile")}
             className="h-10 w-10 rounded-full bg-orange-500/20 flex items-center justify-center overflow-hidden border border-orange-500/30 cursor-pointer hover:ring-2 hover:ring-[#e9671c] transition-all"
             title="Go to Profile"
           >
             <img className="w-full h-full object-cover" src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "User")}&background=e9671c&color=fff`} alt={userName || "User"} />
           </div>
-          {/* 🔥 Logout Button added to the header */}
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors"
@@ -150,12 +232,32 @@ function ComplaintPage() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-6 space-y-6">
             <div className="relative">
               <label className="block text-sm font-semibold text-slate-700 mb-2">Complaint / Request</label>
-              <textarea
-                className="w-full min-h-[280px] p-5 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-[#e9671c] focus:border-transparent text-lg resize-none outline-none transition-all"
-                placeholder="Describe your issue or information request..."
-                value={displayText}
-                onChange={(e) => setText(e.target.value)}
-              />
+
+              {/* 🔥 NEW: Textarea Wrapper with Absolute Positioned Mic Button */}
+              <div className="relative">
+                <textarea
+                  className="w-full min-h-[280px] p-5 pb-20 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-[#e9671c] focus:border-transparent text-lg resize-none outline-none transition-all"
+                  placeholder="Describe your issue or click the mic to speak in any language..."
+                  value={displayText}
+                  onChange={(e) => setText(e.target.value)}
+                />
+
+                <button
+                  onClick={isRecording ? stopRecording : startRecording}
+                  type="button"
+                  disabled={loading && !isRecording}
+                  className={`absolute bottom-5 right-5 flex items-center justify-center h-14 w-14 rounded-full shadow-lg transition-all ${isRecording
+                      ? "bg-red-500 hover:bg-red-600 animate-pulse text-white shadow-red-500/40"
+                      : "bg-white border-2 border-slate-200 text-slate-600 hover:text-[#e9671c] hover:border-[#e9671c] shadow-sm"
+                    }`}
+                  title={isRecording ? "Stop Recording" : "Start Recording"}
+                >
+                  <span className="material-symbols-outlined text-3xl">
+                    {isRecording ? "stop" : "mic"}
+                  </span>
+                </button>
+              </div>
+
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -223,16 +325,15 @@ function ComplaintPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`w-full py-4 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all ${
-                loading 
-                  ? "bg-slate-400 cursor-not-allowed shadow-none" 
-                  : "bg-[#e9671c] hover:bg-[#d15616] shadow-orange-500/20"
-              }`}
+              className={`w-full py-4 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all ${loading
+                ? "bg-slate-400 cursor-not-allowed shadow-none"
+                : "bg-[#e9671c] hover:bg-[#d15616] shadow-orange-500/20"
+                }`}
             >
               <span className={`material-symbols-outlined ${loading ? 'animate-spin' : ''}`}>
                 {loading ? 'sync' : 'send'}
               </span>
-              {loading ? "Processing Image / Submitting..." : "Submit Complaint"}
+              {loading ? "Processing Input / Submitting..." : "Submit Complaint"}
             </button>
           </div>
         </section>

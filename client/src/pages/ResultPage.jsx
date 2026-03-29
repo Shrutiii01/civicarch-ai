@@ -1,22 +1,26 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { toast } from "sonner"; // 🔥 NEW: Toast notifications
 
 function ResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state;
 
-  // Unified ID extraction: Checks for 'id' OR 'complaint_id'
   const documentId = data?.id || data?.complaint_id;
 
-  // State for the editable draft - connected to the textarea
   const [draft, setDraft] = useState(
     data?.draft_text || data?.draft || data?.generated_draft || data?.complaint_draft || ""
   );
 
   const [isDownloading, setIsDownloading] = useState(false);
+  
+  // 🔥 NEW: States for editing and saving
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const textareaRef = useRef(null);
 
-  // Scroll to top on load
   useEffect(() => {
     window.scrollTo(0, 0);
     if (!data) {
@@ -24,31 +28,71 @@ function ResultPage() {
     }
   }, [data]);
 
+  const adjustHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; 
+      textarea.style.height = `${textarea.scrollHeight}px`; 
+    }
+  };
+
+  useEffect(() => {
+    adjustHeight();
+  }, [draft, isEditing]); // 🔥 Added isEditing dependency so it adjusts when mode changes
+
   const copyDraft = () => {
     navigator.clipboard.writeText(draft);
-    alert("Draft copied to clipboard!");
+    toast.success("Draft copied to clipboard!"); // 🔥 Upgraded to toast
+  };
+
+  // 🔥 NEW: Function to save the edited draft to the database
+  const handleSaveDraft = async () => {
+    if (!documentId) {
+      toast.error("Cannot save: Missing Document ID");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const token = localStorage.getItem("token"); // Grab auth token
+      
+      const response = await fetch(`http://localhost:8000/complaints/${documentId}/update-draft`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ draft_text: draft }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save draft to database.");
+      }
+
+      toast.success("Draft successfully updated and saved!");
+      setIsEditing(false); // Switch back to Read-Only mode
+
+    } catch (error) {
+      console.error("Save Error:", error);
+      toast.error("Failed to save changes. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDownloadPDF = async () => {
-    // Validation for the required ID
     if (!documentId) {
-      alert("Error: Complaint ID is missing. Cannot generate PDF.");
+      toast.error("Error: Complaint ID is missing. Cannot generate PDF.");
       return;
     }
 
     setIsDownloading(true);
     try {
-      /**
-       * API CONNECTION STRATEGY:
-       * 1. Appends complaint_id as a Query Parameter for the database filter.
-       * 2. Sends the current 'draft' state in the body so manual edits are reflected in the PDF.
-       */
       const response = await fetch(`http://localhost:8000/generate-pdf?complaint_id=${documentId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        // Must match the Body(..., embed=True) expectation in main.py
         body: JSON.stringify({ draft_text: draft }),
       });
 
@@ -57,29 +101,25 @@ function ResultPage() {
         throw new Error(`Server error (${response.status}): ${errorText}`);
       }
 
-      // Convert the binary stream into a Blob
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       
       const link = document.createElement("a");
       link.href = url;
-      // Friendly filename using a portion of the ID
       link.download = `CivicArch_Draft_${String(documentId).substring(0, 8)}.pdf`; 
       document.body.appendChild(link);
       link.click();
       
-      // Cleanup to prevent memory leaks
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("PDF Download Error:", error);
-      alert(`Could not download PDF. Ensure the backend is running and the database record exists.`);
+      toast.error(`Could not download PDF. Ensure the backend is running.`);
     } finally {
       setIsDownloading(false);
     }
   };
 
-  // Error UI if data is missing
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f8f6f6]">
@@ -99,7 +139,6 @@ function ResultPage() {
 
   return (
     <div className="bg-[#f8f6f6] min-h-screen font-['Public_Sans',sans-serif] text-slate-900 selection:bg-[#ec5b13]/20">
-      {/* Top Navigation Bar */}
       <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
         <div className="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-10">
@@ -135,23 +174,52 @@ function ResultPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Main Content: The Document Page */}
           <div className="lg:col-span-8 flex justify-center bg-slate-200/30 rounded-2xl p-4 md:p-10 border border-slate-200 shadow-inner">
-            <div className="bg-white text-slate-900 w-full max-w-[800px] min-h-[1050px] p-12 md:p-16 shadow-[0_10px_50px_-12px_rgba(0,0,0,0.15)] relative border border-slate-100">
+            
+            <div className="bg-white text-slate-900 w-full max-w-[800px] min-h-[1050px] h-fit flex flex-col p-12 md:p-16 shadow-[0_10px_50px_-12px_rgba(0,0,0,0.15)] relative border border-slate-100 group">
+              
+              {/* 🔥 NEW: Edit / Save Controls */}
+              <div className="absolute top-8 right-8 transition-opacity">
+                {isEditing ? (
+                  <button 
+                    onClick={handleSaveDraft} 
+                    disabled={isSaving}
+                    className="flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded shadow-lg hover:bg-green-700 font-bold text-sm transition-all active:scale-95"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      {isSaving ? "sync" : "save"}
+                    </span>
+                    {isSaving ? "Saving..." : "Save Draft"}
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2 bg-slate-100 text-slate-700 border border-slate-200 px-5 py-2.5 rounded shadow-sm hover:bg-slate-200 font-bold text-sm transition-all active:scale-95 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">edit</span>
+                    Edit Draft
+                  </button>
+                )}
+              </div>
+
               <div className="text-center mb-10">
                 <h3 className="font-bold text-xl uppercase underline underline-offset-8 decoration-2 tracking-widest">OFFICIAL DRAFT</h3>
                 <p className="text-sm mt-3 italic text-slate-500 font-medium">(Generated via CivicArch AI Engine)</p>
               </div>
 
-              {/* Connected Textarea for live edits */}
+              {/* 🔥 UPDATED: Dynamic styling based on Edit Mode */}
               <textarea
-                className="w-full min-h-[750px] border-none focus:ring-0 text-[16px] leading-relaxed font-serif resize-none p-0 text-slate-800 bg-transparent overflow-hidden"
+                ref={textareaRef}
+                readOnly={!isEditing}
+                className={`w-full border-none focus:ring-0 text-[16px] leading-relaxed font-serif resize-none p-4 overflow-hidden transition-colors rounded-lg ${
+                  isEditing ? "bg-amber-50/50 outline-dashed outline-2 outline-amber-400/60 text-slate-900" : "bg-transparent text-slate-800"
+                }`}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 spellCheck="false"
               />
 
-              <div className="mt-16 flex justify-between items-end border-t border-slate-100 pt-8">
+              <div className="mt-auto pt-16 flex justify-between items-end border-t border-slate-100">
                 <div className="text-xs text-slate-400 space-y-1 font-medium">
                   <p>Status: AI Verified</p>
                   <p>Date: {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
@@ -163,7 +231,6 @@ function ResultPage() {
             </div>
           </div>
 
-          {/* Right Sidebar */}
           <div className="lg:col-span-4 flex flex-col gap-6">
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
               <h4 className="font-bold text-slate-900 mb-6 uppercase tracking-wider text-[11px] opacity-60">Legal Compliance Engine</h4>
