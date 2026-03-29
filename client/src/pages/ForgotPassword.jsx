@@ -8,6 +8,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,7 +18,7 @@ export default function ForgotPassword() {
 
     try {
       await forgotPassword(email);
-      alert("OTP sent to your email");
+      setSuccess("OTP sent to your email. Please continue to reset password.");
       localStorage.setItem("resetEmail", email);
       navigate("/reset-password");
     } catch (err) {
@@ -106,6 +107,11 @@ export default function ForgotPassword() {
             {error && (
               <div className="text-red-500 text-xs font-bold bg-red-50 p-3 rounded-lg border border-red-100">
                 {error}
+              </div>
+            )}
+            {success && (
+              <div className="text-green-600 text-xs font-bold bg-green-50 p-3 rounded-lg border border-green-100">
+                {success}
               </div>
             )}
 

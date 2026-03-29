@@ -9,6 +9,7 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // ── New UI State ──
   const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +19,7 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const res = await signup({
@@ -27,8 +29,6 @@ function Signup() {
       });
 
       console.log(res.data);
-      alert("OTP sent to your email. Please verify your account.");
-
       // Store email for OTP verification page
       localStorage.setItem("verifyEmail", email);
 
@@ -42,6 +42,8 @@ function Signup() {
       } else {
         setError("Failed to create account. Please try again.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -160,9 +162,11 @@ function Signup() {
 
             <button
               type="submit"
-              className="w-full bg-[#e9671c] hover:bg-[#D35400] text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-[#e9671c]/20 active:scale-[0.98]"
+              disabled={loading}
+              className="w-full bg-[#e9671c] hover:bg-[#D35400] text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-[#e9671c]/20 active:scale-[0.98] disabled:opacity-70"
             >
-              Register Now <ArrowRight size={18} />
+              {loading ? 'Creating account...' : 'Register Now'}
+              {!loading && <ArrowRight size={18} />}
             </button>
           </form>
 
