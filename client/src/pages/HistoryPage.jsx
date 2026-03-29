@@ -83,7 +83,6 @@ const HistoryPage = () => {
                           
                           <Link to="/dashboard" className="hover:text-[#e9671c] transition-colors">Dashboard</Link>
                           <Link to="/history" className="text-[#e9671c] ">History</Link>
-                          <Link to="/heatmap" className="hover:text-[#e9671c] transition-colors">Heatmap</Link>
                           <Link to="/profile" className="hover:text-[#e9671c] transition-colors">Profile</Link>
                           <div className="flex items-center gap-3 pl-5 border-l border-stone-200">
                               <button
