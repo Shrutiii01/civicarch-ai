@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from modules.db.database import SessionLocal
 
 from .auth_schema import SignupRequest, LoginRequest
+from .auth_utils import get_current_user
+from modules.db.models import User
 
 from .auth_service import (
     signup_user,
@@ -71,3 +73,17 @@ def reset(email: str, otp: str, new_password: str, db: Session = Depends(get_db)
     reset_password(db, email, otp, new_password)
 
     return {"message": "Password updated successfully"}
+
+
+@router.get("/me")
+def get_user_profile(user: User = Depends(get_current_user)):
+    return {
+        "id": str(user.id),
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "created_at": user.created_at.isoformat() if user.created_at else None,
+        "phone": getattr(user, "phone", None),
+        "location": getattr(user, "location", None),
+        "pincode": getattr(user, "pincode", None),
+    }

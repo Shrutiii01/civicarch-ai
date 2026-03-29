@@ -13,6 +13,7 @@ import Processing from "./pages/processing";
 import Dashboard from "./pages/Dashboard";
 import Howitwork from "./pages/Howitwork";
 import Aboutus from "./pages/aboutus";
+import ProfilePage from "./pages/profilepage"; // 1. Import the Profile Page
 
 // 🔥 NEW: Import the three specific form pages
 import RtiForm from "./pages/RtiForm";
@@ -107,6 +108,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <HistoryPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 2. Added Profile Route with Protection */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />

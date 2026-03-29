@@ -1,6 +1,7 @@
+import { useState, useEffect } from "react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { submitComplaint, processImage } from "../services/api";
+import api, { submitComplaint, processImage } from "../services/api";
 
 function ComplaintPage() {
   const navigate = useNavigate();
@@ -12,6 +13,21 @@ function ComplaintPage() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        if (res.data && res.data.name) {
+          setUserName(res.data.name);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user data for profile image", err);
+      }
+    };
+    fetchUser();
+  }, []);
 
   // 🔥 NEW: Audio Recording States and Refs
   const [isRecording, setIsRecording] = useState(false);
@@ -118,10 +134,10 @@ function ComplaintPage() {
     } catch (err) {
       // 🔥 NEW: Grab the exact secret error message sent by FastAPI
       const exactError = err.response?.data?.detail || err.message;
-      
+
       console.error("🔥 EXACT AI ERROR:", exactError);
       alert(`Server Error: ${exactError}`);
-      
+
     } finally {
       setLoading(false);
     }
@@ -188,8 +204,12 @@ function ComplaintPage() {
           <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
             <span className="material-symbols-outlined">notifications</span>
           </button>
-          <div className="h-10 w-10 rounded-full bg-orange-500/20 flex items-center justify-center overflow-hidden border border-orange-500/30">
-            <img className="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=User&background=e9671c&color=fff" alt="User" />
+          <div
+            onClick={() => navigate("/profile")}
+            className="h-10 w-10 rounded-full bg-orange-500/20 flex items-center justify-center overflow-hidden border border-orange-500/30 cursor-pointer hover:ring-2 hover:ring-[#e9671c] transition-all"
+            title="Go to Profile"
+          >
+            <img className="w-full h-full object-cover" src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "User")}&background=e9671c&color=fff`} alt={userName || "User"} />
           </div>
           <button
             onClick={handleLogout}
@@ -212,7 +232,7 @@ function ComplaintPage() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-6 space-y-6">
             <div className="relative">
               <label className="block text-sm font-semibold text-slate-700 mb-2">Complaint / Request</label>
-              
+
               {/* 🔥 NEW: Textarea Wrapper with Absolute Positioned Mic Button */}
               <div className="relative">
                 <textarea
@@ -221,16 +241,15 @@ function ComplaintPage() {
                   value={displayText}
                   onChange={(e) => setText(e.target.value)}
                 />
-                
+
                 <button
                   onClick={isRecording ? stopRecording : startRecording}
                   type="button"
                   disabled={loading && !isRecording}
-                  className={`absolute bottom-5 right-5 flex items-center justify-center h-14 w-14 rounded-full shadow-lg transition-all ${
-                    isRecording 
-                      ? "bg-red-500 hover:bg-red-600 animate-pulse text-white shadow-red-500/40" 
+                  className={`absolute bottom-5 right-5 flex items-center justify-center h-14 w-14 rounded-full shadow-lg transition-all ${isRecording
+                      ? "bg-red-500 hover:bg-red-600 animate-pulse text-white shadow-red-500/40"
                       : "bg-white border-2 border-slate-200 text-slate-600 hover:text-[#e9671c] hover:border-[#e9671c] shadow-sm"
-                  }`}
+                    }`}
                   title={isRecording ? "Stop Recording" : "Start Recording"}
                 >
                   <span className="material-symbols-outlined text-3xl">
@@ -306,11 +325,10 @@ function ComplaintPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`w-full py-4 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all ${
-                loading 
-                  ? "bg-slate-400 cursor-not-allowed shadow-none" 
-                  : "bg-[#e9671c] hover:bg-[#d15616] shadow-orange-500/20"
-              }`}
+              className={`w-full py-4 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all ${loading
+                ? "bg-slate-400 cursor-not-allowed shadow-none"
+                : "bg-[#e9671c] hover:bg-[#d15616] shadow-orange-500/20"
+                }`}
             >
               <span className={`material-symbols-outlined ${loading ? 'animate-spin' : ''}`}>
                 {loading ? 'sync' : 'send'}
