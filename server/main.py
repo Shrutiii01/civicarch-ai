@@ -21,12 +21,18 @@ load_dotenv()
 app = FastAPI(title="CivicArch AI API")
 
 # --- IMPROVED CORS CONFIGURATION ---
+frontend_url = os.getenv("FRONTEND_URL")
 origins = [
     "http://localhost:5173",
-    "http://localhost:5174", # 🔥 Added your frontend port
+    "http://localhost:5174",
+    "http://localhost:5175",
     "http://127.0.0.1:5173",
-    "http://127.0.0.1:5174"
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175",
 ]
+
+if frontend_url and frontend_url not in origins:
+    origins.append(frontend_url)
 
 app.add_middleware(
     CORSMiddleware,
@@ -74,12 +80,7 @@ async def generate_pdf(
         width, height = letter
         margin = 70
         
-        # --- PDF Header ---
-        p.setFont("Helvetica-Bold", 16)
-        p.setFillColorRGB(0.925, 0.356, 0.074) # CivicArch Orange
-        p.drawString(margin, height - 60, "CIVIC ARCH AI - OFFICIAL DRAFT")
-        p.line(margin, height - 65, width - margin, height - 65)
-        
+    
         # --- PDF Body ---
         p.setFillColorRGB(0, 0, 0) # Black text
         p.setFont("Helvetica", 11)
