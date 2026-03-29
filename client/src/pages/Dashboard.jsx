@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -7,18 +7,34 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { classifyIssue } from '../services/api'; // 🔥 NEW: Imported our API function
+import { classifyIssue } from '../services/api'; 
+
+// 🔥 Import your uploaded background images here (adjust the path if needed)
+import rti1 from '../assets/rti1.jpeg';
+import rti2 from '../assets/rti2.jpeg';
+import rti3 from '../assets/rti3.jpeg';
 
 export default function Dashboard() {
     const [query, setQuery] = useState("");
-    const [isAnalyzing, setIsAnalyzing] = useState(false); // Used for both UI and state
+    const [isAnalyzing, setIsAnalyzing] = useState(false); 
     const navigate = useNavigate();
 
-    // ── AI Classification Search Logic ──
-    const handleSearch = async (e) => {
-        if (e) e.preventDefault(); // Prevents page reload on form submit
+    // 🔥 NEW: State for tracking the current background image index
+    const [currentBgIndex, setCurrentBgIndex] = useState(0);
+    const backgroundImages = [rti1, rti2, rti3];
 
-        // 1. Validation
+    // 🔥 NEW: Effect to cycle through the background images every 4 seconds
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentBgIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
+        }, 4000); 
+        return () => clearInterval(interval);
+    }, [backgroundImages.length]);
+
+    // ── AI Classification Search Logic (UNTOUCHED) ──
+    const handleSearch = async (e) => {
+        if (e) e.preventDefault(); 
+
         if (!query || query.trim().length < 5) {
             toast.error("Please provide a more descriptive issue for AI analysis.");
             return;
@@ -27,20 +43,23 @@ export default function Dashboard() {
         setIsAnalyzing(true); 
 
         try {
-            // 🔥 2. Use our clean api.js function instead of raw axios
             const response = await classifyIssue(query);
-            const category = response.data.category; // Expected: 'complaint', 'information_request', or 'grievance'
+            const category = response.data.category; 
 
-            // 3. Feedback
             toast.success(`AI identified this as a ${category.replace('_', ' ').toUpperCase()}`);
 
-            // 🔥 4. Structural Routing with a tiny delay so the toast is visible
+            // 4. Structural Routing with a tiny delay so the toast is visible
             setTimeout(() => {
-                if (category === "information_request") {
+                // Force lowercase to ensure safe matching
+                const safeCategory = category.toLowerCase();
+
+                // Use .includes() so "grievance." or "information_request " still match perfectly
+                if (safeCategory.includes("information") || safeCategory.includes("rti")) {
                     navigate('/rti-form', { state: { initialText: query } });
-                } else if (category === "grievance") {
+                } else if (safeCategory.includes("grievance")) {
                     navigate('/grievance-form', { state: { initialText: query } });
                 } else {
+                    // Default fallback
                     navigate('/complaint-form', { state: { initialText: query } });
                 }
             }, 1000);
@@ -49,7 +68,7 @@ export default function Dashboard() {
             console.error("AI Classification failed", error);
             toast.error("AI Service is temporarily unavailable. Please select a category manually.");
         } finally {
-            setIsAnalyzing(false); // Ensures the button re-enables
+            setIsAnalyzing(false); 
         }
     };
 
@@ -62,24 +81,27 @@ export default function Dashboard() {
         <div className="min-h-screen bg-white font-sans text-[#1A1A1A]">
             {/* ── Navbar ── */}
             <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-100 bg-white sticky top-0 z-50">
-                <div className="flex items-center gap-2">
-                    <div className="bg-[#e9671c] p-1 rounded text-white shadow-md">
-                        <Gavel size={16} />
+                <div className="flex items-center gap-3">
+                    <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
+                        <Landmark size={24} />
                     </div>
-                    <h1 className="font-serif text-lg font-bold italic tracking-tight">
-                        CivicArch <span className="text-[#e9671c] not-italic">AI</span>
-                    </h1>
+                    <div>
+                        <h1 className="font-serif text-xl font-bold leading-none">JanSahaay</h1>
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-6 text-[10px] font-bold text-stone-500 uppercase tracking-widest">
-                    <Link to="/" className="hover:text-[#e9671c] transition-colors">Home</Link>
-                    <Link to="/rti" className="hover:text-[#e9671c] transition-colors">File RTI</Link>
-                    <Link to="/heatmap" className="hover:text-[#e9671c] transition-colors">Heatmap</Link>
                     <Link to="/dashboard" className="text-[#e9671c]">Dashboard</Link>
+                    <Link to="/history" className="hover:text-[#e9671c] transition-colors">History</Link>
+                    <Link to="/heatmap" className="hover:text-[#e9671c] transition-colors">Heatmap</Link>
+                    <Link to="/" className="hover:text-[#e9671c] transition-colors">Profile</Link>
                     <div className="flex items-center gap-3 pl-5 border-l border-stone-200">
-                        <span className="text-stone-400 normal-case font-medium italic">Citizen User</span>
-                        <button onClick={handleLogout} className="hover:text-red-500 transition-colors">
-                            <LogOut size={16} />
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">logout</span>
+                            <span className="hidden sm:inline">Logout</span>
                         </button>
                     </div>
                 </div>
@@ -87,13 +109,32 @@ export default function Dashboard() {
 
             {/* ── Refined Hero Section ── */}
             <section className="bg-[#0a0a0a] pt-20 pb-40 px-4 text-center relative overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[#e9671c]/5 blur-[100px] pointer-events-none"></div>
+                
+                {/* 🔥 NEW: Background Slideshow Layer */}
+                {backgroundImages.map((img, idx) => (
+                    <div
+                        key={idx}
+                        className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+                            idx === currentBgIndex ? "opacity-25" : "opacity-0"
+                        }`}
+                    >
+                        {/* Using object-cover to ensure it fills the div, and grayscale to make it look highly professional/institutional */}
+                        <img 
+                            src={img} 
+                            alt="Background" 
+                            className="w-full h-full object-cover grayscale mix-blend-overlay" 
+                        />
+                    </div>
+                ))}
+
+                {/* Existing Orange Glow Effect */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[#e9671c]/10 blur-[100px] pointer-events-none"></div>
 
                 <div className="relative z-10 space-y-3">
                     <h2 className="text-4xl font-serif font-bold text-white tracking-tight">
                         Welcome back, <span className="text-[#e9671c] italic">Citizen</span>
                     </h2>
-                    <p className="text-stone-500 text-sm font-light tracking-wide">Select a service or search your issue below</p>
+                    <p className="text-stone-400 text-sm font-light tracking-wide">Select a service or search your issue below</p>
                 </div>
 
                 {/* ── Search Bar ── */}
@@ -149,7 +190,7 @@ export default function Dashboard() {
                 <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10 text-[11px] uppercase font-bold tracking-widest text-stone-500">
                     <div className="normal-case font-medium text-xs space-y-4">
                         <div className="flex items-center gap-2 text-white font-serif text-base font-bold">
-                            <Landmark size={18} className="text-[#e9671c]" /> CivicArch AI
+                            <Landmark size={18} className="text-[#e9671c]" /> JanSahaay
                         </div>
                         <p className="leading-relaxed">Institutional digital governance infrastructure for the modern citizen.</p>
                     </div>
