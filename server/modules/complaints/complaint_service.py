@@ -14,7 +14,7 @@ def create_complaint(db, user_id, user_name, user_email, text, location, pincode
     processed = process_complaint(text=text)
     
     # Safely get the translated text fallback
-    translated_text = processed.get("translated_text")
+    translated_text = processed.get("translated_text") 
     if not translated_text or str(translated_text).strip().lower() in ["none", ""]:
         translated_text = text
 

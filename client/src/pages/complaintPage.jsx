@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { submitComplaint, processImage } from "../services/api";
+import api, { submitComplaint, processImage } from "../services/api";
 
 function ComplaintPage() {
   const navigate = useNavigate();
@@ -12,6 +12,21 @@ function ComplaintPage() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        if (res.data && res.data.name) {
+          setUserName(res.data.name);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user data for profile image", err);
+      }
+    };
+    fetchUser();
+  }, []);
 
   // Handle image selection (Kept from existing logic)
   const handleImageChange = async (e) => {
@@ -106,8 +121,12 @@ function ComplaintPage() {
           <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
             <span className="material-symbols-outlined">notifications</span>
           </button>
-          <div className="h-10 w-10 rounded-full bg-orange-500/20 flex items-center justify-center overflow-hidden border border-orange-500/30">
-            <img className="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=User&background=e9671c&color=fff" alt="User" />
+          <div 
+            onClick={() => navigate("/profile")}
+            className="h-10 w-10 rounded-full bg-orange-500/20 flex items-center justify-center overflow-hidden border border-orange-500/30 cursor-pointer hover:ring-2 hover:ring-[#e9671c] transition-all"
+            title="Go to Profile"
+          >
+            <img className="w-full h-full object-cover" src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "User")}&background=e9671c&color=fff`} alt={userName || "User"} />
           </div>
           {/* 🔥 Logout Button added to the header */}
           <button
