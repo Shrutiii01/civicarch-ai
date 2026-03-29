@@ -141,17 +141,7 @@ const AboutUs = () => {
 
                     </div>
                 </div>
-                
-                <div className="hidden md:block w-[1px] h-12 bg-white/20"></div>
-                
-                <div className="text-center group">
-                    <div className="text-[#e9671c] text-4xl font-bold mb-1 drop-shadow-md">₹10</div>
-                    <div className="text-white/80 text-xs uppercase tracking-widest font-bold">Application Fee</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+            </section>
 
             {/* FOOTER - Consistent max-w-7xl */}
             <footer className="bg-[#1A1A1A] text-white pt-20 pb-10 border-t-4 border-[#e9671c]">

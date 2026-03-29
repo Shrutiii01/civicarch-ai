@@ -1,6 +1,7 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { toast } from "sonner"; // 🔥 NEW: Toast notifications
+import { toast } from "sonner";
+import { Landmark } from "lucide-react"; // 🔥 NEW: Imported Landmark for the navbar
 
 function ResultPage() {
   const location = useLocation();
@@ -15,7 +16,6 @@ function ResultPage() {
 
   const [isDownloading, setIsDownloading] = useState(false);
   
-  // 🔥 NEW: States for editing and saving
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -38,14 +38,13 @@ function ResultPage() {
 
   useEffect(() => {
     adjustHeight();
-  }, [draft, isEditing]); // 🔥 Added isEditing dependency so it adjusts when mode changes
+  }, [draft, isEditing]);
 
   const copyDraft = () => {
     navigator.clipboard.writeText(draft);
-    toast.success("Draft copied to clipboard!"); // 🔥 Upgraded to toast
+    toast.success("Draft copied to clipboard!");
   };
 
-  // 🔥 NEW: Function to save the edited draft to the database
   const handleSaveDraft = async () => {
     if (!documentId) {
       toast.error("Cannot save: Missing Document ID");
@@ -54,7 +53,7 @@ function ResultPage() {
 
     setIsSaving(true);
     try {
-      const token = localStorage.getItem("token"); // Grab auth token
+      const token = localStorage.getItem("token"); 
       
       const response = await fetch(`http://localhost:8000/complaints/${documentId}/update-draft`, {
         method: "PUT",
@@ -70,7 +69,7 @@ function ResultPage() {
       }
 
       toast.success("Draft successfully updated and saved!");
-      setIsEditing(false); // Switch back to Read-Only mode
+      setIsEditing(false); 
 
     } catch (error) {
       console.error("Save Error:", error);
@@ -120,6 +119,12 @@ function ResultPage() {
     }
   };
 
+  // 🔥 NEW: Added handleLogout to support the new navbar
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/", { replace: true });
+  };
+
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f8f6f6]">
@@ -138,37 +143,40 @@ function ResultPage() {
   }
 
   return (
-    <div className="bg-[#f8f6f6] min-h-screen font-['Public_Sans',sans-serif] text-slate-900 selection:bg-[#ec5b13]/20">
-      <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-10">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-              <div className="h-8 w-8 bg-[#ec5b13] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">C</span>
+    <div className="bg-[#f8f6f6] min-h-screen font-['Public_Sans',sans-serif] text-slate-900 selection:bg-[#ec5b13]/20 pb-20">
+      
+      {/* 🔥 NEW: Replaced old header with the consistent JanSahaay Navbar */}
+      <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-100 bg-white sticky top-0 z-50">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
+              <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
+                  <Landmark size={24} />
               </div>
-              <span className="font-bold text-xl tracking-tight">CivicArch AI</span>
-            </div>
-            <nav className="hidden md:flex items-center gap-6">
-              <span className="text-sm font-semibold text-[#ec5b13] cursor-pointer">Drafting</span>
-              <span className="text-sm font-medium text-slate-600 hover:text-[#ec5b13] transition-colors cursor-pointer">Case Vault</span>
-            </nav>
+              <div>
+                  <h1 className="font-serif text-xl font-bold leading-none">JanSahaay</h1>
+              </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="h-8 w-8 rounded-full bg-[#ec5b13]/20 border border-[#ec5b13]/30 flex items-center justify-center">
-              <span className="text-xs font-bold text-[#ec5b13]">JD</span>
-            </div>
-          </div>
-        </div>
-      </header>
 
-      <main className="max-w-[1440px] mx-auto px-6 py-6">
+          <div className="hidden md:flex items-center gap-6 text-[10px] font-bold text-stone-500 uppercase tracking-widest">
+              <Link to="/dashboard" className="hover:text-[#e9671c] transition-colors">Dashboard</Link>
+              <Link to="/history" className="hover:text-[#e9671c] transition-colors">History</Link>
+              <Link to="/heatmap" className="hover:text-[#e9671c] transition-colors">Heatmap</Link>
+              <Link to="/profile" className="hover:text-[#e9671c] transition-colors">Profile</Link>
+              <div className="flex items-center gap-3 pl-5 border-l border-stone-200">
+                  <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors"
+                  >
+                      <span className="material-symbols-outlined text-[18px]">logout</span>
+                      <span className="hidden sm:inline">Logout</span>
+                  </button>
+              </div>
+          </div>
+      </nav>
+
+      <main className="max-w-[1440px] mx-auto px-6 py-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-2">
-              <span className="hover:underline cursor-pointer" onClick={() => navigate('/')}>Dashboard</span>
-              <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-              <span className="text-slate-900 font-bold">Preview_Draft.pdf</span>
-            </nav>
+           
             <h2 className="text-3xl font-bold text-slate-900">Document Intelligence Preview</h2>
           </div>
         </div>
@@ -178,7 +186,6 @@ function ResultPage() {
             
             <div className="bg-white text-slate-900 w-full max-w-[800px] min-h-[1050px] h-fit flex flex-col p-12 md:p-16 shadow-[0_10px_50px_-12px_rgba(0,0,0,0.15)] relative border border-slate-100 group">
               
-              {/* 🔥 NEW: Edit / Save Controls */}
               <div className="absolute top-8 right-8 transition-opacity">
                 {isEditing ? (
                   <button 
@@ -207,7 +214,6 @@ function ResultPage() {
                 <p className="text-sm mt-3 italic text-slate-500 font-medium">(Generated via CivicArch AI Engine)</p>
               </div>
 
-              {/* 🔥 UPDATED: Dynamic styling based on Edit Mode */}
               <textarea
                 ref={textareaRef}
                 readOnly={!isEditing}
@@ -231,47 +237,15 @@ function ResultPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-              <h4 className="font-bold text-slate-900 mb-6 uppercase tracking-wider text-[11px] opacity-60">Legal Compliance Engine</h4>
-              <div className="flex items-center gap-8">
-                <div className="relative flex-shrink-0">
-                  <div className="w-24 h-24 rounded-full flex items-center justify-center relative"
-                    style={{ background: 'conic-gradient(#ec5b13 0% 92%, #e2e8f0 92% 100%)' }}>
-                    <div className="w-[84px] h-[84px] rounded-full bg-white flex items-center justify-center">
-                      <span className="text-3xl font-bold text-slate-900">9.2</span>
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-tighter">Verified</div>
+          {/* Right Sidebar - Action Panel */}
+          <div className="lg:col-span-4 flex flex-col gap-6 pt-4 lg:pt-0">
+            
+            <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm text-center">
+                <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-100">
+                    <span className="material-symbols-outlined text-green-500 text-3xl">task_alt</span>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#ec5b13]"></span>
-                    <span className="text-[11px] font-bold text-slate-900 uppercase tracking-tight">Compliance Score</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-tight font-medium">High precision analysis confirms adherence to legal standards.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-              <h4 className="font-bold text-slate-900 mb-4 uppercase tracking-wider text-[11px] opacity-60">Analysis Details</h4>
-              <div className="space-y-5">
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-green-500 !text-xl [font-variation-settings:'FILL'_1]">check_circle</span>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900 leading-tight">{data.department || "Public Authority Identified"}</p>
-                    <p className="text-xs text-slate-500 mt-1 font-medium">Confirmed correct custodian.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-amber-500 !text-xl [font-variation-settings:'FILL'_1]">warning</span>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900 leading-tight">Information Specificity</p>
-                    <p className="text-xs text-slate-500 mt-1 font-medium">Check date ranges in evidence.</p>
-                  </div>
-                </div>
-              </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Draft Ready</h3>
+                <p className="text-sm text-slate-500 font-medium">Your document is ready for download or manual editing.</p>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -295,16 +269,25 @@ function ResultPage() {
               </button>
             </div>
 
-            <div className="p-5 rounded-xl border border-dashed border-slate-300 bg-slate-50/50">
-              <div className="flex items-center gap-2 text-slate-900 mb-2 opacity-60">
+            <div className="p-6 mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50/50">
+              <div className="flex items-center gap-2 text-slate-900 mb-3 opacity-60">
                 <span className="material-symbols-outlined text-sm">history</span>
                 <span className="text-[10px] font-bold uppercase tracking-widest">Document Meta</span>
               </div>
-              <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-                Source: {data.extracted_text ? "OCR Extracted" : "Manual Input"}<br />
-                Backend ID: {documentId || "N/A"}<br />
-                Verification ID: CV-AI-SUCCESS
-              </p>
+              <div className="space-y-2">
+                  <p className="text-[11px] text-slate-600 font-medium flex justify-between">
+                    <span className="text-slate-400">Source:</span> 
+                    <span className="font-bold">{data.extracted_text ? "OCR Extracted" : "Manual Input"}</span>
+                  </p>
+                  <p className="text-[11px] text-slate-600 font-medium flex justify-between">
+                    <span className="text-slate-400">Backend ID:</span> 
+                    <span className="font-mono font-bold bg-slate-200/50 px-1 rounded">{documentId || "N/A"}</span>
+                  </p>
+                  <p className="text-[11px] text-slate-600 font-medium flex justify-between">
+                    <span className="text-slate-400">Verification:</span> 
+                    <span className="text-green-600 font-bold">SUCCESS</span>
+                  </p>
+              </div>
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ import api from '../services/api'; // Your backend API instance
 import {
     Search, Network, FileText, DoorOpen, BarChart3, Scale,
     TrendingUp, ShieldCheck, Languages, FileSearch,
-    Play, ChevronDown, Send, Share2, Globe, Landmark,
+    Play, ChevronDown, Send, Share2, Globe, Landmark, Waypoints,
     ArrowRight, MoreVertical, Mic, Cpu, CheckSquare
 } from 'lucide-react';
 
@@ -82,31 +82,36 @@ const Landing = () => {
         }];
 
     const capabilities = [
-        { icon: TrendingUp, title: 'Trend Detection', desc: 'Identifying systematic administrative delays across 400+ government departments.' },
-        { icon: ShieldCheck, title: 'Data Integrity', desc: 'End-to-end encrypted file management ensuring citizen privacy and non-repudiation.' },
-        { icon: Languages, title: 'Multilingual Support', desc: 'AI-powered translation into 22 official Indian languages for inclusive governance access.' },
+        {
+            icon: Mic,
+            title: 'Voice-to-Draft AI',
+            desc: 'Speak your civic issue naturally. Our audio processing AI transcribes, translates, and structures your voice note into a formal legal document.'
+        }, {
+            icon: Waypoints,
+            title: 'Intelligent Routing',
+            desc: 'The AI automatically classifies your input into the correct legal framework (RTI, Grievance, or Complaint) and identifies the exact target department.'
+        }, { icon: Languages, title: 'Multilingual Support', desc: 'AI-powered translation into 22 official Indian languages for inclusive governance access.' },
         { icon: FileSearch, title: 'Smart Summaries', desc: 'Condensing long government responses into actionable executive insights.' },
     ];
 
-    const faqs = [
+        const faqs = [
         {
-            q: 'How long does an institutional RTI response take?',
-            a: 'By law, public authorities are mandated to respond within 30 days of receiving the application. If the matter concerns life or liberty, the timeframe is reduced to 48 hours.'
+            q: 'Are AI-generated drafts legally valid for submission?',
+            a: 'Yes. Government departments focus on the substance and format of the request, not the tool used to write it. JanSahaay ensures your drafts strictly follow the statutory formatting required by Indian administrative laws.'
         },
         {
-            q: 'Is AI-assisted filing legally recognized?',
-            a: 'Yes. The RTI Act focuses on the substance of the request rather than the tool used to draft it. CivicArch ensures your draft strictly follows statutory formatting requirements.'
+            q: 'Can I explain my issue using my voice or in my regional language?',
+            a: 'Absolutely! JanSahaay allows you to record voice notes in natural language. Our AI automatically translates, transcribes, and structures your spoken words into a formal, professional legal document.'
         },
         {
-            q: 'What documents are required for digital verification?',
-            a: 'Typically, you only need a valid Government ID (like Aadhaar or Voter ID) for citizenship verification, along with any supporting evidence (like photos or previous letters) for your query.'
+            q: 'How do I know which department to send my grievance to?',
+            a: 'You don’t need to know! JanSahaay’s intelligent routing automatically analyzes your text or voice input to identify the exact government department or municipal body responsible for resolving your specific issue.'
         },
         {
-            q: 'Can I appeal a rejected response through CivicArch?',
-            a: 'Absolutely. If your request is rejected or ignored after 30 days, CivicArch can help you generate a First Appeal draft to formally escalate the matter to the First Appellate Authority.'
+            q: 'How long does an RTI or Grievance response usually take?',
+            a: 'Under the RTI Act, authorities are legally mandated to respond within 30 days. For public grievances, resolution timelines vary by state under the Citizen’s Charter, but usually range from 15 to 30 days.'
         }
     ];
-
     const heroImg = 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80';
     const mapImg = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdrJn7M0Bw-p7AMqQCuogkMTgu1c99wrVhfA-KytyiCITXjQ1Gc8ZkB9HVmNz8byuYJJfgjUo-pWeCqtKIx5vp0dGHB_G-FAPG_tX5OjiAU82EhQzaObw5L9Dx_pe89raw6atuM1zQZtMMfQQBb6CYpNYMqymOOWBVIU8aT-qFtn3EKil2SPzc4e0qCRwBuWuBG8-u6JxwiUaWP1uEaRZIvXWL9le0k3fDLWlf5q8SBYnRDbTd2J7DFcB9h3wRX4ePzrGCkczBgg';
     const videoImg = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAgMjGevM9tiF_rsVTtEmro6PopLGNxH-eYERISTtceSYMk-meMkqe1x8L8MZ-OorKlPpqiBIDj0hbUmtK1mjIBVFcPK5tYsp4vus6NfjgkYXBbrDhACaPKFcEbQB5JjGhllSaGEhZ-InC914bk8nrNTYWvi9imotYI9w-GPzJKzKKQCq61Y8jOFwRt0VJb-vHMN5AJy4EcqnhVj1QstpRKqzQ4lf7ZVh20ENFjKur_q8DJB_b89jK4k6taeUtOL9Z1qMLQsiaLEg';
@@ -178,37 +183,37 @@ const Landing = () => {
                     <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${heroImg}')` }}></div>
                     <div className="absolute inset-0 bg-[#1A1A1A]/20"></div>
 
-                    
+
                 </div>
             </section>
 
-        {/* ── Framework ── */}
-    <section className="py-24 bg-white border-b border-stone-100">
-        <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-20">
-                <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Framework</h3>
-                <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">The Golden Path to Justice</h2>
-                <div className="w-24 h-1 bg-[#e9671c] mx-auto mt-4"></div>
-            </div>
-            
-            {/* 🔥 UPDATED: Changed to lg:grid-cols-4 for perfect 4-column spacing */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-                
-                {/* 🔥 UPDATED: Adjusted the line width and position so it connects the centers perfectly */}
-                <div className="hidden lg:block absolute top-10 left-[12.5%] w-[75%] h-px bg-stone-200 z-0"></div>
-                
-                {steps.map((step, idx) => (
-                    <div key={idx} className="relative z-10 group text-center">
-                        <div className="w-20 h-20 rounded-full bg-[#FDF6ED] border border-orange-500/20 flex items-center justify-center mx-auto mb-6 group-hover:bg-[#e9671c] group-hover:text-white transition-all duration-300 text-[#e9671c] shadow-sm">
-                            <step.icon size={28} />
-                        </div>
-                        <h4 className="font-bold text-sm mb-2">{step.title}</h4>
-                        <p className="text-xs text-stone-500 leading-relaxed px-2 font-medium">{step.desc}</p>
+            {/* ── Framework ── */}
+            <section className="py-24 bg-white border-b border-stone-100">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center mb-20">
+                        <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Framework</h3>
+                        <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">The Golden Path to Justice</h2>
+                        <div className="w-24 h-1 bg-[#e9671c] mx-auto mt-4"></div>
                     </div>
-                ))}
-            </div>
-        </div>
-    </section>
+
+                    {/* 🔥 UPDATED: Changed to lg:grid-cols-4 for perfect 4-column spacing */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+
+                        {/* 🔥 UPDATED: Adjusted the line width and position so it connects the centers perfectly */}
+                        <div className="hidden lg:block absolute top-10 left-[12.5%] w-[75%] h-px bg-stone-200 z-0"></div>
+
+                        {steps.map((step, idx) => (
+                            <div key={idx} className="relative z-10 group text-center">
+                                <div className="w-20 h-20 rounded-full bg-[#FDF6ED] border border-orange-500/20 flex items-center justify-center mx-auto mb-6 group-hover:bg-[#e9671c] group-hover:text-white transition-all duration-300 text-[#e9671c] shadow-sm">
+                                    <step.icon size={28} />
+                                </div>
+                                <h4 className="font-bold text-sm mb-2">{step.title}</h4>
+                                <p className="text-xs text-stone-500 leading-relaxed px-2 font-medium">{step.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
             {/* ── Capabilities ── */}
             <section className="py-24 bg-[#FDF6ED]/30">
@@ -218,7 +223,7 @@ const Landing = () => {
                             <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Core Infrastructure</h3>
                             <h2 className="font-serif text-4xl font-bold">Platform Capabilities</h2>
                         </div>
-                            </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {capabilities.map((cap, idx) => (
                             <div key={idx} className="bg-white p-8 rounded shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 border border-stone-100 group">
@@ -291,38 +296,37 @@ const Landing = () => {
                 </div>
             </section>
 
-           {/* ── Institutional Resources (FAQ Only) ── */}
+            {/* ── Institutional Resources (FAQ Only) ── */}
             <section className="py-24 bg-white">
                 <div className="max-w-4xl mx-auto px-6">
                     <div className="text-center mb-16">
                         <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Support Center</h3>
                         <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">Frequently Asked Queries</h2>
                     </div>
-                    
+
                     {/* Centered FAQ List */}
                     <div className="space-y-4">
                         {faqs.map((faq, idx) => (
-                            <div 
-                                key={idx} 
+                            <div
+                                key={idx}
                                 className="border border-stone-100 bg-[#FDF6ED]/30 rounded overflow-hidden hover:border-[#e9671c] transition-all"
                             >
                                 {/* Question Header */}
-                                <div 
+                                <div
                                     className="p-5 cursor-pointer flex justify-between items-center group"
                                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                                 >
                                     <span className="font-bold text-sm group-hover:text-[#e9671c] transition-colors">{faq.q}</span>
-                                    <ChevronDown 
-                                        size={18} 
-                                        className={`text-stone-400 transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`} 
+                                    <ChevronDown
+                                        size={18}
+                                        className={`text-stone-400 transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`}
                                     />
                                 </div>
-                                
+
                                 {/* Smooth Expanding Answer Section */}
-                                <div 
-                                    className={`transition-all duration-300 ease-in-out ${
-                                        openFaq === idx ? 'max-h-[200px] opacity-100 pb-5 px-5' : 'max-h-0 opacity-0 overflow-hidden px-5'
-                                    }`}
+                                <div
+                                    className={`transition-all duration-300 ease-in-out ${openFaq === idx ? 'max-h-[200px] opacity-100 pb-5 px-5' : 'max-h-0 opacity-0 overflow-hidden px-5'
+                                        }`}
                                 >
                                     <p className="text-sm text-stone-500 leading-relaxed border-t border-stone-200/50 pt-3">
                                         {faq.a}
@@ -349,13 +353,13 @@ const Landing = () => {
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
                     <div>
                         <div className="flex items-center gap-3">
-                        <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
-                            <Landmark size={24} />
+                            <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
+                                <Landmark size={24} />
+                            </div>
+                            <div>
+                                <h1 className="font-serif text-xl font-bold leading-none">JanSahaay</h1>
+                            </div>
                         </div>
-                        <div>
-                            <h1 className="font-serif text-xl font-bold leading-none">JanSahaay</h1>
-                        </div>
-                    </div>
 
                         <p className="text-stone-400 text-sm leading-relaxed mb-8 font-light">
                             Architecting the future of administrative justice in India. Powered by verified AI models and institutional expertise.
