@@ -4,7 +4,6 @@ import { login as apiLogin } from '../services/api'; // Official Backend Service
 import { useAuth } from '../context/AuthContext'; // Institutional Auth Context
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight, Gavel, ShieldCheck, Eye, EyeOff } from 'lucide-react';
-import { toast } from 'sonner';
 
 export const LoginPage = () => {
   // ── UI and Navigation State ──
@@ -16,16 +15,18 @@ export const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // 1. Structural Validation
     if (!email || !password) {
-      toast.error('Please fill in all official credentials');
+      setError('Please fill in all official credentials');
       return;
     }
 
+    setError('');
     setLoading(true);
 
     try {
@@ -40,16 +41,13 @@ export const LoginPage = () => {
       // This ensures ProtectedRoute in App.jsx grants access
       contextLogin(email, 'Citizen User');
 
-      // 5. Success Feedback and Navigation
-      toast.success('Authentication Successful: Welcome back!');
-
       // Navigates to the protected complaint filing portal
       navigate('/complaint');
 
     } catch (err) {
       console.error("Backend Auth Error:", err);
       // Provides direct feedback for database connection issues or invalid credentials
-      toast.error(err.response?.data?.message || "Authentication failed: Please verify your credentials or network.");
+      setError(err.response?.data?.message || "Authentication failed: Please verify your credentials or network.");
     } finally {
       setLoading(false);
     }
@@ -157,7 +155,13 @@ export const LoginPage = () => {
               </div>
             </div>
 
-            <button
+            {error && (
+            <div className="text-red-500 text-xs font-bold bg-red-50 p-3 rounded-lg border border-red-100 mb-2">
+              {error}
+            </div>
+          )}
+
+          <button
               type="submit"
               disabled={loading}
               className="w-full bg-[#e9671c] hover:bg-[#D35400] text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-500/10 active:scale-[0.98] disabled:opacity-70"

@@ -97,34 +97,42 @@ const AboutUs = () => {
                 </div>
             </section>
 
-            {/* RTI Act Info Card - Aligned with Nav/Footer */}
-            <section className="max-w-7xl mx-auto px-10 pb-24">
-                <div className="bg-[#111] rounded-[2rem] p-16 text-center text-white shadow-2xl">
-                    <h2 className="text-3xl font-serif font-bold mb-10">The RTI Act, 2005</h2>
-                    <div className="max-w-3xl mx-auto space-y-8 text-stone-400 text-sm md:text-base leading-relaxed">
-                        <p>
-                            The Right to Information (RTI) is an act of the Parliament of India which sets out the rules and
-                            procedures regarding citizens' right to information. It replaced the former Freedom of Information Act, 2002.
-                        </p>
-                        <p>
-                            Under the provisions of the Act, any citizen of India may request information from a "public authority"
-                            (a body of Government or "instrumentality of State") which is required to reply expeditiously or within thirty days.
-                        </p>
-                    </div>
+           {/* RTI Act Info Card - Glassmorphism Update */}
+<section className="max-w-7xl mx-auto px-10 pb-24">
+    <div className="relative overflow-hidden bg-black/80 backdrop-blur-xl rounded-[2rem] p-16 text-center text-white shadow-2xl border border-white/10">
+        {/* Optional: subtle radial gradient for depth */}
+        <div className="absolute inset-0 bg-radial-gradient from-white/5 to-transparent pointer-events-none"></div>
+        
+        <div className="relative z-10">
+            <h2 className="text-3xl font-serif font-bold mb-10 tracking-tight">The RTI Act, 2005</h2>
+            
+            <div className="max-w-3xl mx-auto space-y-8 text-stone-200 text-sm md:text-base leading-relaxed font-medium">
+                <p>
+                    The Right to Information (RTI) is an act of the Parliament of India which sets out the rules and 
+                    procedures regarding citizens' right to information. It replaced the former Freedom of Information Act, 2002.
+                </p>
+                <p>
+                    Under the provisions of the Act, any citizen of India may request information from a "public authority" 
+                    (a body of Government or "instrumentality of State") which is required to reply expeditiously or within thirty days.
+                </p>
+            </div>
 
-                    <div className="flex flex-col md:flex-row justify-center items-center gap-12 mt-12 border-t border-white/10 pt-12">
-                        <div className="text-center">
-                            <div className="text-[#e9671c] text-4xl font-bold mb-1">30 Days</div>
-                            <div className="text-xs uppercase tracking-widest font-bold">Max Response Time</div>
-                        </div>
-                        <div className="hidden md:block w-[1px] h-12 bg-white/10"></div>
-                        <div className="text-center">
-                            <div className="text-[#e9671c] text-4xl font-bold mb-1">₹10</div>
-                            <div className="text-xs uppercase tracking-widest font-bold">Application Fee</div>
-                        </div>
-                    </div>
+            <div className="flex flex-col md:flex-row justify-center items-center gap-12 mt-12 border-t border-white/20 pt-12">
+                <div className="text-center group">
+                    <div className="text-[#e9671c] text-4xl font-bold mb-1 drop-shadow-md">30 Days</div>
+                    <div className="text-white/80 text-xs uppercase tracking-widest font-bold">Max Response Time</div>
                 </div>
-            </section>
+                
+                <div className="hidden md:block w-[1px] h-12 bg-white/20"></div>
+                
+                <div className="text-center group">
+                    <div className="text-[#e9671c] text-4xl font-bold mb-1 drop-shadow-md">₹10</div>
+                    <div className="text-white/80 text-xs uppercase tracking-widest font-bold">Application Fee</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
             {/* FOOTER - Consistent max-w-7xl */}
             <footer className="bg-[#1A1A1A] text-white pt-20 pb-10 border-t-4 border-[#e9671c]">
