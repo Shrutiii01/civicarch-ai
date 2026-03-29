@@ -14,7 +14,7 @@ def generate_grievance_draft(final_input, department, location, user_name, user_
     prompt = f"""
 Role: You are a Senior Administrative Consultant specializing in Public Grievance Redressal and the Citizen's Charter.
 
-Task: Draft a formal Public Grievance Letter to be submitted to a Departmental Head or a Grievance Portal based on the following details:
+Task: Draft a formal Public Grievance Letter to be submitted to a Departmental Head or a Grievance Portal in the language the user state in the user input based on the following details:
 
 Citizen's Issue (including user input and image details): {final_input}
 Department: {department}

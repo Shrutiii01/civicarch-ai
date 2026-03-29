@@ -94,7 +94,7 @@ export default function Dashboard() {
                     <Link to="/dashboard" className="text-[#e9671c]">Dashboard</Link>
                     <Link to="/history" className="hover:text-[#e9671c] transition-colors">History</Link>
                     <Link to="/heatmap" className="hover:text-[#e9671c] transition-colors">Heatmap</Link>
-                    <Link to="/" className="hover:text-[#e9671c] transition-colors">Profile</Link>
+                    <Link to="/profile" className="hover:text-[#e9671c] transition-colors">Profile</Link>
                     <div className="flex items-center gap-3 pl-5 border-l border-stone-200">
                         <button
                             onClick={handleLogout}

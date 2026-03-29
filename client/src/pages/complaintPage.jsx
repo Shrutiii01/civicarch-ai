@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useState, useRef } from "react";
+import { useState, useEffect,useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { submitComplaint, processImage } from "../services/api";
 
@@ -185,41 +184,33 @@ function ComplaintPage() {
       <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
       {/* Header */}
-      <header className="flex items-center justify-between border-b border-orange-500/10 px-6 py-4 lg:px-20 bg-white sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center h-10 w-10 bg-[#e9671c] rounded-lg text-white">
-            <span className="material-symbols-outlined">account_balance</span>
-          </div>
-          <h2 className="text-xl font-bold tracking-tight font-serif">
-            CivicArch <span className="text-[#e9671c]">AI</span>
-          </h2>
-        </div>
+       {/* ── Navbar ── */}
+            <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-100 bg-white sticky top-0 z-50">
+                <div className="flex items-center gap-3">
+                    <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
+                        <Landmark size={24} />
+                    </div>
+                    <div>
+                        <h1 className="font-serif text-xl font-bold leading-none">JanSahaay</h1>
+                    </div>
+                </div>
 
-        <nav className="hidden md:flex flex-1 justify-center gap-8">
-          <button className="text-sm font-semibold text-slate-900 border-b-2 border-[#e9671c] pb-1">AI Architect</button>
-          <button className="text-sm font-medium text-slate-500 hover:text-[#e9671c]">Dashboard</button>
-        </nav>
-
-        <div className="flex items-center gap-4">
-          <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-            <span className="material-symbols-outlined">notifications</span>
-          </button>
-          <div
-            onClick={() => navigate("/profile")}
-            className="h-10 w-10 rounded-full bg-orange-500/20 flex items-center justify-center overflow-hidden border border-orange-500/30 cursor-pointer hover:ring-2 hover:ring-[#e9671c] transition-all"
-            title="Go to Profile"
-          >
-            <img className="w-full h-full object-cover" src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName || "User")}&background=e9671c&color=fff`} alt={userName || "User"} />
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors"
-          >
-            <span className="material-symbols-outlined text-[18px]">logout</span>
-            <span className="hidden sm:inline">Logout</span>
-          </button>
-        </div>
-      </header>
+                <div className="flex items-center gap-6 text-[10px] font-bold text-stone-500 uppercase tracking-widest">
+                    <Link to="/dashboard" className="text-[#e9671c]">Dashboard</Link>
+                    <Link to="/history" className="hover:text-[#e9671c] transition-colors">History</Link>
+                    <Link to="/heatmap" className="hover:text-[#e9671c] transition-colors">Heatmap</Link>
+                    <Link to="/profile" className="hover:text-[#e9671c] transition-colors">Profile</Link>
+                    <div className="flex items-center gap-3 pl-5 border-l border-stone-200">
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">logout</span>
+                            <span className="hidden sm:inline">Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
 
       {/* Main Content */}
       <main className="flex flex-1 flex-col lg:flex-row gap-8 px-6 py-8 lg:px-20 max-w-[1600px] mx-auto w-full">
