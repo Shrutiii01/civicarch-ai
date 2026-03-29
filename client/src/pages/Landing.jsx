@@ -79,16 +79,6 @@ const Landing = () => {
             icon: CheckSquare,
             title: 'Verification',
             desc: 'Review, edit, and sign your generated application for compliance.'
-        },
-        {
-            icon: Send,
-            title: 'Direct Submission',
-            desc: 'Instant routing to the precisely targeted government department.'
-        },
-        {
-            icon: BarChart3,
-            title: 'Lifecycle Tracking',
-            desc: 'Real-time monitoring of your application status and impact scoring.'
         }];
 
     const capabilities = [
@@ -99,10 +89,22 @@ const Landing = () => {
     ];
 
     const faqs = [
-        'How long does an institutional RTI response take?',
-        'Is AI-assisted filing legally recognized?',
-        'What documents are required for digital verification?',
-        'Can I appeal a rejected response through CivicArch?',
+        {
+            q: 'How long does an institutional RTI response take?',
+            a: 'By law, public authorities are mandated to respond within 30 days of receiving the application. If the matter concerns life or liberty, the timeframe is reduced to 48 hours.'
+        },
+        {
+            q: 'Is AI-assisted filing legally recognized?',
+            a: 'Yes. The RTI Act focuses on the substance of the request rather than the tool used to draft it. CivicArch ensures your draft strictly follows statutory formatting requirements.'
+        },
+        {
+            q: 'What documents are required for digital verification?',
+            a: 'Typically, you only need a valid Government ID (like Aadhaar or Voter ID) for citizenship verification, along with any supporting evidence (like photos or previous letters) for your query.'
+        },
+        {
+            q: 'Can I appeal a rejected response through CivicArch?',
+            a: 'Absolutely. If your request is rejected or ignored after 30 days, CivicArch can help you generate a First Appeal draft to formally escalate the matter to the First Appellate Authority.'
+        }
     ];
 
     const heroImg = 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80';
@@ -180,28 +182,33 @@ const Landing = () => {
                 </div>
             </section>
 
-            {/* ── Framework ── */}
-            <section className="py-24 bg-white border-b border-stone-100">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-20">
-                        <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Framework</h3>
-                        <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">The Golden Path to Justice</h2>
-                        <div className="w-24 h-1 bg-[#e9671c] mx-auto mt-6"></div>
+        {/* ── Framework ── */}
+    <section className="py-24 bg-white border-b border-stone-100">
+        <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-20">
+                <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Framework</h3>
+                <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">The Golden Path to Justice</h2>
+                <div className="w-24 h-1 bg-[#e9671c] mx-auto mt-4"></div>
+            </div>
+            
+            {/* 🔥 UPDATED: Changed to lg:grid-cols-4 for perfect 4-column spacing */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+                
+                {/* 🔥 UPDATED: Adjusted the line width and position so it connects the centers perfectly */}
+                <div className="hidden lg:block absolute top-10 left-[12.5%] w-[75%] h-px bg-stone-200 z-0"></div>
+                
+                {steps.map((step, idx) => (
+                    <div key={idx} className="relative z-10 group text-center">
+                        <div className="w-20 h-20 rounded-full bg-[#FDF6ED] border border-orange-500/20 flex items-center justify-center mx-auto mb-6 group-hover:bg-[#e9671c] group-hover:text-white transition-all duration-300 text-[#e9671c] shadow-sm">
+                            <step.icon size={28} />
+                        </div>
+                        <h4 className="font-bold text-sm mb-2">{step.title}</h4>
+                        <p className="text-xs text-stone-500 leading-relaxed px-2 font-medium">{step.desc}</p>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 relative">
-                        <div className="hidden lg:block absolute top-10 left-0 w-full h-px bg-stone-100 z-0"></div>
-                        {steps.map((step, idx) => (
-                            <div key={idx} className="relative z-10 group text-center">
-                                <div className="w-20 h-20 rounded-full bg-[#FDF6ED] border border-orange-500/20 flex items-center justify-center mx-auto mb-6 group-hover:bg-[#e9671c] group-hover:text-white transition-all duration-300 text-[#e9671c] shadow-sm">
-                                    <step.icon size={28} />
-                                </div>
-                                <h4 className="font-bold text-sm mb-2">{step.title}</h4>
-                                <p className="text-xs text-stone-500 leading-relaxed px-2 font-medium">{step.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+                ))}
+            </div>
+        </div>
+    </section>
 
             {/* ── Capabilities ── */}
             <section className="py-24 bg-[#FDF6ED]/30">
@@ -211,8 +218,7 @@ const Landing = () => {
                             <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Core Infrastructure</h3>
                             <h2 className="font-serif text-4xl font-bold">Platform Capabilities</h2>
                         </div>
-                        <a className="text-[#e9671c] font-bold text-sm border-b-2 border-orange-500/20 pb-1 hover:border-[#e9671c] transition-all" href="#whitepaper">View Technical Whitepaper</a>
-                    </div>
+                            </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {capabilities.map((cap, idx) => (
                             <div key={idx} className="bg-white p-8 rounded shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 border border-stone-100 group">
@@ -285,42 +291,45 @@ const Landing = () => {
                 </div>
             </section>
 
-            {/* ── Institutional Resources ── */}
+           {/* ── Institutional Resources (FAQ Only) ── */}
             <section className="py-24 bg-white">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-20">
+                <div className="max-w-4xl mx-auto px-6">
+                    <div className="text-center mb-16">
                         <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Support Center</h3>
-                        <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">Institutional Resources</h2>
+                        <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">Frequently Asked Queries</h2>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                        <div>
-                            <h4 className="font-bold text-xl mb-8 flex items-center gap-3">
-                                <Play className="text-[#e9671c]" fill="#e9671c" size={20} /> Filing Video Protocol
-                            </h4>
-                            <div className="aspect-video bg-stone-900 rounded overflow-hidden relative group cursor-pointer shadow-xl">
-                                <div className="absolute inset-0 bg-cover bg-center opacity-70 group-hover:scale-105 transition-transform duration-700"
-                                    style={{ backgroundImage: `url('${videoImg}')` }}></div>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-16 h-16 rounded-full bg-[#e9671c]/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xl">
-                                        <Play className="text-white fill-white" size={24} />
-                                    </div>
+                    
+                    {/* Centered FAQ List */}
+                    <div className="space-y-4">
+                        {faqs.map((faq, idx) => (
+                            <div 
+                                key={idx} 
+                                className="border border-stone-100 bg-[#FDF6ED]/30 rounded overflow-hidden hover:border-[#e9671c] transition-all"
+                            >
+                                {/* Question Header */}
+                                <div 
+                                    className="p-5 cursor-pointer flex justify-between items-center group"
+                                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                                >
+                                    <span className="font-bold text-sm group-hover:text-[#e9671c] transition-colors">{faq.q}</span>
+                                    <ChevronDown 
+                                        size={18} 
+                                        className={`text-stone-400 transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`} 
+                                    />
+                                </div>
+                                
+                                {/* Smooth Expanding Answer Section */}
+                                <div 
+                                    className={`transition-all duration-300 ease-in-out ${
+                                        openFaq === idx ? 'max-h-[200px] opacity-100 pb-5 px-5' : 'max-h-0 opacity-0 overflow-hidden px-5'
+                                    }`}
+                                >
+                                    <p className="text-sm text-stone-500 leading-relaxed border-t border-stone-200/50 pt-3">
+                                        {faq.a}
+                                    </p>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-xl mb-8 flex items-center gap-3">
-                                <MoreVertical className="text-[#e9671c]" size={20} /> Frequently Asked Queries
-                            </h4>
-                            <div className="space-y-4">
-                                {faqs.map((q, idx) => (
-                                    <div key={idx} className="border border-stone-100 bg-[#FDF6ED]/30 p-5 rounded hover:border-[#e9671c] transition-all cursor-pointer flex justify-between items-center group"
-                                        onClick={() => setOpenFaq(openFaq === idx ? null : idx)}>
-                                        <span className="font-bold text-sm group-hover:text-[#e9671c] transition-colors">{q}</span>
-                                        <ChevronDown size={18} className={`text-stone-400 transition-transform ${openFaq === idx ? 'rotate-180' : ''}`} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -339,10 +348,15 @@ const Landing = () => {
             <footer className="bg-[#1A1A1A] text-white pt-20 pb-10 border-t-4 border-[#e9671c]">
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
                     <div>
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="bg-[#e9671c] p-1.5 rounded-sm"><Landmark size={20} /></div>
-                            <h1 className="font-serif text-lg font-bold">CivicArch AI</h1>
+                        <div className="flex items-center gap-3">
+                        <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
+                            <Landmark size={24} />
                         </div>
+                        <div>
+                            <h1 className="font-serif text-xl font-bold leading-none">JanSahaay</h1>
+                        </div>
+                    </div>
+
                         <p className="text-stone-400 text-sm leading-relaxed mb-8 font-light">
                             Architecting the future of administrative justice in India. Powered by verified AI models and institutional expertise.
                         </p>

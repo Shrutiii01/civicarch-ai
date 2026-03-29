@@ -42,7 +42,7 @@ export const LoginPage = () => {
       contextLogin(email, 'Citizen User');
 
       // Navigates to the protected complaint filing portal
-      navigate('/complaint');
+      navigate('/Dashboard');
 
     } catch (err) {
       console.error("Backend Auth Error:", err);

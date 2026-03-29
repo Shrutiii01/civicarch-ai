@@ -13,6 +13,13 @@ import Processing from "./pages/processing";
 import Dashboard from "./pages/Dashboard";
 import Howitwork from "./pages/Howitwork";
 import Aboutus from "./pages/aboutus";
+import ProfilePage from "./pages/profilepage"; // 1. Import the Profile Page
+
+// 🔥 NEW: Import the three specific form pages
+import RtiForm from "./pages/RtiForm";
+import GrievanceForm from "./pages/GrievanceForm";
+import ComplaintForm from "./pages/ComplaintForm";
+
 import { Toaster } from 'sonner';
 
 function App() {
@@ -35,20 +42,48 @@ function App() {
           <Route path="/howitwork" element={<Howitwork />} />
           <Route path="/aboutus" element={<Aboutus />} />
 
-          {/* Complaint System Routes */}
-          <Route
-            path="/complaint"
-            element={
-              <ProtectedRoute>
-                <ComplaintPage />
-              </ProtectedRoute>
-            }
-          />
+          {/* Core Dashboard */}
           <Route
             path="/Dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 🔥 NEW: Specific AI Form Routes */}
+          <Route
+            path="/rti-form"
+            element={
+              <ProtectedRoute>
+                <RtiForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/grievance-form"
+            element={
+              <ProtectedRoute>
+                <GrievanceForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/complaint-form"
+            element={
+              <ProtectedRoute>
+                <ComplaintForm />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Legacy / Shared Complaint Routes */}
+          <Route
+            path="/complaint"
+            element={
+              <ProtectedRoute>
+                <ComplaintPage />
               </ProtectedRoute>
             }
           />
@@ -60,7 +95,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/result"
             element={
@@ -69,12 +103,21 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/history"
             element={
               <ProtectedRoute>
                 <HistoryPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 2. Added Profile Route with Protection */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />
