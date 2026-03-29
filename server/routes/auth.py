@@ -24,3 +24,4 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
         "message": "Login successful",
         "user_id": db_user.id
     }
+

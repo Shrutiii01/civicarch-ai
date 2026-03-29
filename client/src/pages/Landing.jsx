@@ -4,14 +4,14 @@ import api from '../services/api'; // Your backend API instance
 import {
     Search, Network, FileText, DoorOpen, BarChart3, Scale,
     TrendingUp, ShieldCheck, Languages, FileSearch,
-    Play, ChevronDown, Send, Share2, Globe, Landmark,
-    ArrowRight, MoreVertical
+    Play, ChevronDown, Send, Share2, Globe, Landmark, Waypoints,
+    ArrowRight, MoreVertical, Mic, Cpu, CheckSquare
 } from 'lucide-react';
 
 const Landing = () => {
     // ── Backend Connection State ──
     const [message, setMessage] = useState("Connecting to server...");
-    
+
     // ── UI State ──
     const [openFaq, setOpenFaq] = useState(null);
     const [text, setText] = useState('');
@@ -60,66 +60,90 @@ const Landing = () => {
 
     // ── Static Data ──
     const steps = [
-        { icon: Search, title: 'Intent Discovery', desc: 'AI-mapped citizen rights and objectives.' },
-        { icon: Network, title: 'Bureaucratic Mapping', desc: 'Precise department and officer targeting.' },
-        { icon: FileText, title: 'RTI Generation', desc: 'Legally fortified draft optimization.' },
-        { icon: DoorOpen, title: 'Filing Gateway', desc: 'Direct submission to national portals.' },
-        { icon: BarChart3, title: 'Intelligent Tracking', desc: 'Real-time lifecycle monitoring.' },
-        { icon: Scale, title: 'Outcome Analysis', desc: 'Impact scoring and legal next-steps.' },
-    ];
+        {
+            icon: Search,
+            title: 'Identify Issue',
+            desc: 'Select the specific civic or administrative problem you are facing.'
+        },
+        {
+            icon: Mic,
+            title: 'Multi-Modal Input',
+            desc: 'Provide evidence and details via text, voice, or document uploads.'
+        },
+        {
+            icon: Cpu,
+            title: 'AI Structuring',
+            desc: 'Our engine transforms your raw data into legally fortified formats.'
+        },
+        {
+            icon: CheckSquare,
+            title: 'Verification',
+            desc: 'Review, edit, and sign your generated application for compliance.'
+        }];
 
     const capabilities = [
-        { icon: TrendingUp, title: 'Trend Detection', desc: 'Identifying systematic administrative delays across 400+ government departments.' },
-        { icon: ShieldCheck, title: 'Data Integrity', desc: 'End-to-end encrypted file management ensuring citizen privacy and non-repudiation.' },
-        { icon: Languages, title: 'Multilingual Support', desc: 'AI-powered translation into 22 official Indian languages for inclusive governance access.' },
+        {
+            icon: Mic,
+            title: 'Voice-to-Draft AI',
+            desc: 'Speak your civic issue naturally. Our audio processing AI transcribes, translates, and structures your voice note into a formal legal document.'
+        }, {
+            icon: Waypoints,
+            title: 'Intelligent Routing',
+            desc: 'The AI automatically classifies your input into the correct legal framework (RTI, Grievance, or Complaint) and identifies the exact target department.'
+        }, { icon: Languages, title: 'Multilingual Support', desc: 'AI-powered translation into 22 official Indian languages for inclusive governance access.' },
         { icon: FileSearch, title: 'Smart Summaries', desc: 'Condensing long government responses into actionable executive insights.' },
     ];
 
-    const faqs = [
-        'How long does an institutional RTI response take?',
-        'Is AI-assisted filing legally recognized?',
-        'What documents are required for digital verification?',
-        'Can I appeal a rejected response through CivicArch?',
+        const faqs = [
+        {
+            q: 'Are AI-generated drafts legally valid for submission?',
+            a: 'Yes. Government departments focus on the substance and format of the request, not the tool used to write it. JanSahaay ensures your drafts strictly follow the statutory formatting required by Indian administrative laws.'
+        },
+        {
+            q: 'Can I explain my issue using my voice or in my regional language?',
+            a: 'Absolutely! JanSahaay allows you to record voice notes in natural language. Our AI automatically translates, transcribes, and structures your spoken words into a formal, professional legal document.'
+        },
+        {
+            q: 'How do I know which department to send my grievance to?',
+            a: 'You don’t need to know! JanSahaay’s intelligent routing automatically analyzes your text or voice input to identify the exact government department or municipal body responsible for resolving your specific issue.'
+        },
+        {
+            q: 'How long does an RTI or Grievance response usually take?',
+            a: 'Under the RTI Act, authorities are legally mandated to respond within 30 days. For public grievances, resolution timelines vary by state under the Citizen’s Charter, but usually range from 15 to 30 days.'
+        }
     ];
-
     const heroImg = 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80';
     const mapImg = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdrJn7M0Bw-p7AMqQCuogkMTgu1c99wrVhfA-KytyiCITXjQ1Gc8ZkB9HVmNz8byuYJJfgjUo-pWeCqtKIx5vp0dGHB_G-FAPG_tX5OjiAU82EhQzaObw5L9Dx_pe89raw6atuM1zQZtMMfQQBb6CYpNYMqymOOWBVIU8aT-qFtn3EKil2SPzc4e0qCRwBuWuBG8-u6JxwiUaWP1uEaRZIvXWL9le0k3fDLWlf5q8SBYnRDbTd2J7DFcB9h3wRX4ePzrGCkczBgg';
     const videoImg = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAgMjGevM9tiF_rsVTtEmro6PopLGNxH-eYERISTtceSYMk-meMkqe1x8L8MZ-OorKlPpqiBIDj0hbUmtK1mjIBVFcPK5tYsp4vus6NfjgkYXBbrDhACaPKFcEbQB5JjGhllSaGEhZ-InC914bk8nrNTYWvi9imotYI9w-GPzJKzKKQCq61Y8jOFwRt0VJb-vHMN5AJy4EcqnhVj1QstpRKqzQ4lf7ZVh20ENFjKur_q8DJB_b89jK4k6taeUtOL9Z1qMLQsiaLEg';
 
     return (
         <div className="bg-[#f8f7f6] font-sans text-[#1A1A1A] antialiased page-transition">
-            {/* ── Top Government Bar ── */}
-            <div className="bg-[#1A1A1A] text-white/70 text-[11px] uppercase tracking-widest py-2 px-6 flex justify-between items-center border-b border-white/10 hidden md:flex">
-                <div className="flex gap-6">
-                    <a className="hover:text-[#e9671c] transition-colors" href="#india">india.gov.in</a>
-                    <a className="hover:text-[#e9671c] transition-colors" href="#portal">National Portal of India</a>
-                    <a className="hover:text-[#e9671c] transition-colors" href="#meity">Ministry of Electronics & IT</a>
-                </div>
-                <div className="flex gap-4">
-                    <span>Language: English</span>
-                    <span>Accessibility Support</span>
-                </div>
-            </div>
+
 
             {/* ── Navbar ── */}
-            <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-stone-200 shadow-sm">
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
+                {/* Changed max-w-7xl to max-w-full and increased horizontal padding (px-10) */}
+                <div className="max-w-full mx-auto px-10 h-20 flex items-center justify-between">
+
+                    {/* Left Side: Logo */}
                     <div className="flex items-center gap-3">
                         <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
                             <Landmark size={24} />
                         </div>
                         <div>
-                            <h1 className="font-serif text-xl font-bold leading-none">CivicArch AI</h1>
-                            <p className="text-[10px] uppercase tracking-tighter text-stone-500 font-bold">Institutional RTI Infrastructure</p>
+                            <h1 className="font-serif text-xl font-bold leading-none">JanSahaay</h1>
                         </div>
                     </div>
+
+                    {/* Center: Links (Will naturally stay centered-ish between the ends) */}
                     <div className="hidden lg:flex items-center gap-10">
                         <Link to="/" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Home</Link>
-                        <a className="text-sm font-semibold hover:text-[#e9671c] transition-colors cursor-pointer" href="#how-it-works">How It Works</a>
-                        <Link to="/login" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">File RTI</Link>
+                        <Link to="/aboutus" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">About us</Link>
+                        <Link to="/howitwork" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">How It Works</Link>
                         <Link to="/heatmap" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Heatmap</Link>
-                        <a className="text-sm font-semibold hover:text-[#e9671c] transition-colors cursor-pointer" href="#dashboard">Dashboard</a>
                     </div>
+
+                    {/* Right Side: Button */}
                     <Link to="/login" className="bg-[#e9671c] hover:bg-[#C0392B] text-white px-6 py-2.5 rounded-sm font-bold text-sm tracking-wide transition-all shadow-md">
                         LOGIN / START FILING
                     </Link>
@@ -130,7 +154,7 @@ const Landing = () => {
             <section className="relative h-[650px] flex items-stretch overflow-hidden bg-[#FDF6ED]">
                 <div className="w-full lg:w-7/12 bg-gradient-to-br from-[#e9671c] via-[#e9671c] to-[#C0392B] relative z-10 flex items-center px-12 lg:px-24 hero-diagonal">
                     <div className="max-w-xl text-white">
-                        
+
                         {/* Status Indicators */}
                         <div className="flex flex-wrap gap-3 mb-8">
                             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1 text-white/90 text-xs font-bold tracking-widest uppercase">
@@ -140,12 +164,8 @@ const Landing = () => {
                                 </span>
                                 National Compliance Active
                             </div>
-                            
-                            {/* Integrated Backend Message Here */}
-                            <div className="inline-flex items-center gap-2 bg-black/20 border border-white/10 rounded-full px-4 py-1 text-white/90 text-xs font-bold tracking-widest uppercase">
-                                <span className={`h-2 w-2 rounded-full ${message === 'Connecting to server...' || message === 'Server connection failed' ? 'bg-red-400' : 'bg-green-400'}`}></span>
-                                System: {message}
-                            </div>
+
+
                         </div>
 
                         <h2 className="font-serif text-5xl lg:text-7xl leading-[1.1] mb-6 font-black tracking-tight min-h-[160px]">
@@ -157,26 +177,13 @@ const Landing = () => {
                         <p className="text-white/80 text-lg mb-10 max-w-md leading-relaxed font-light">
                             Empowering citizens with secure, AI-driven transparency and professional grade legal infrastructure for the digital age.
                         </p>
-                        <div className="flex gap-4">
-                            <Link to="/login" className="bg-[#1A1A1A] text-white px-8 py-4 font-bold text-sm tracking-widest hover:bg-black transition-colors uppercase">
-                                Initialize Application
-                            </Link>
-                            <button className="border border-white/30 text-white px-8 py-4 font-bold text-sm tracking-widest hover:bg-white/10 transition-colors uppercase">
-                                View Protocols
-                            </button>
-                        </div>
                     </div>
                 </div>
                 <div className="absolute right-0 top-0 w-full lg:w-1/2 h-full z-0">
                     <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${heroImg}')` }}></div>
                     <div className="absolute inset-0 bg-[#1A1A1A]/20"></div>
-                    <div className="absolute top-20 right-20 bg-white/85 backdrop-blur-md p-6 rounded-lg shadow-2xl flex flex-col items-center min-w-[160px] border border-orange-500/10 scale-110">
-                        <span className="text-stone-500 text-[10px] uppercase font-bold tracking-widest mb-1">Compliance Score</span>
-                        <div className="text-[#e9671c] text-4xl font-serif font-black italic">9.2<span className="text-stone-400 text-xl font-normal not-italic">/10</span></div>
-                        <div className="w-full h-1.5 bg-stone-200 mt-4 rounded-full overflow-hidden">
-                            <div className="bg-[#e9671c] h-full w-[92%]"></div>
-                        </div>
-                    </div>
+
+
                 </div>
             </section>
 
@@ -186,10 +193,15 @@ const Landing = () => {
                     <div className="text-center mb-20">
                         <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Framework</h3>
                         <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">The Golden Path to Justice</h2>
-                        <div className="w-24 h-1 bg-[#e9671c] mx-auto mt-6"></div>
+                        <div className="w-24 h-1 bg-[#e9671c] mx-auto mt-4"></div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 relative">
-                        <div className="hidden lg:block absolute top-10 left-0 w-full h-px bg-stone-100 z-0"></div>
+
+                    {/* 🔥 UPDATED: Changed to lg:grid-cols-4 for perfect 4-column spacing */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+
+                        {/* 🔥 UPDATED: Adjusted the line width and position so it connects the centers perfectly */}
+                        <div className="hidden lg:block absolute top-10 left-[12.5%] w-[75%] h-px bg-stone-200 z-0"></div>
+
                         {steps.map((step, idx) => (
                             <div key={idx} className="relative z-10 group text-center">
                                 <div className="w-20 h-20 rounded-full bg-[#FDF6ED] border border-orange-500/20 flex items-center justify-center mx-auto mb-6 group-hover:bg-[#e9671c] group-hover:text-white transition-all duration-300 text-[#e9671c] shadow-sm">
@@ -211,7 +223,6 @@ const Landing = () => {
                             <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Core Infrastructure</h3>
                             <h2 className="font-serif text-4xl font-bold">Platform Capabilities</h2>
                         </div>
-                        <a className="text-[#e9671c] font-bold text-sm border-b-2 border-orange-500/20 pb-1 hover:border-[#e9671c] transition-all" href="#whitepaper">View Technical Whitepaper</a>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {capabilities.map((cap, idx) => (
@@ -285,42 +296,44 @@ const Landing = () => {
                 </div>
             </section>
 
-            {/* ── Institutional Resources ── */}
+            {/* ── Institutional Resources (FAQ Only) ── */}
             <section className="py-24 bg-white">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-20">
+                <div className="max-w-4xl mx-auto px-6">
+                    <div className="text-center mb-16">
                         <h3 className="text-stone-400 text-xs font-bold uppercase tracking-[0.3em] mb-4">Support Center</h3>
-                        <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">Institutional Resources</h2>
+                        <h2 className="font-serif text-4xl text-[#1A1A1A] font-bold">Frequently Asked Queries</h2>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                        <div>
-                            <h4 className="font-bold text-xl mb-8 flex items-center gap-3">
-                                <Play className="text-[#e9671c]" fill="#e9671c" size={20} /> Filing Video Protocol
-                            </h4>
-                            <div className="aspect-video bg-stone-900 rounded overflow-hidden relative group cursor-pointer shadow-xl">
-                                <div className="absolute inset-0 bg-cover bg-center opacity-70 group-hover:scale-105 transition-transform duration-700"
-                                    style={{ backgroundImage: `url('${videoImg}')` }}></div>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-16 h-16 rounded-full bg-[#e9671c]/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xl">
-                                        <Play className="text-white fill-white" size={24} />
-                                    </div>
+
+                    {/* Centered FAQ List */}
+                    <div className="space-y-4">
+                        {faqs.map((faq, idx) => (
+                            <div
+                                key={idx}
+                                className="border border-stone-100 bg-[#FDF6ED]/30 rounded overflow-hidden hover:border-[#e9671c] transition-all"
+                            >
+                                {/* Question Header */}
+                                <div
+                                    className="p-5 cursor-pointer flex justify-between items-center group"
+                                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                                >
+                                    <span className="font-bold text-sm group-hover:text-[#e9671c] transition-colors">{faq.q}</span>
+                                    <ChevronDown
+                                        size={18}
+                                        className={`text-stone-400 transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`}
+                                    />
+                                </div>
+
+                                {/* Smooth Expanding Answer Section */}
+                                <div
+                                    className={`transition-all duration-300 ease-in-out ${openFaq === idx ? 'max-h-[200px] opacity-100 pb-5 px-5' : 'max-h-0 opacity-0 overflow-hidden px-5'
+                                        }`}
+                                >
+                                    <p className="text-sm text-stone-500 leading-relaxed border-t border-stone-200/50 pt-3">
+                                        {faq.a}
+                                    </p>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-xl mb-8 flex items-center gap-3">
-                                <MoreVertical className="text-[#e9671c]" size={20} /> Frequently Asked Queries
-                            </h4>
-                            <div className="space-y-4">
-                                {faqs.map((q, idx) => (
-                                    <div key={idx} className="border border-stone-100 bg-[#FDF6ED]/30 p-5 rounded hover:border-[#e9671c] transition-all cursor-pointer flex justify-between items-center group"
-                                        onClick={() => setOpenFaq(openFaq === idx ? null : idx)}>
-                                        <span className="font-bold text-sm group-hover:text-[#e9671c] transition-colors">{q}</span>
-                                        <ChevronDown size={18} className={`text-stone-400 transition-transform ${openFaq === idx ? 'rotate-180' : ''}`} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -339,10 +352,15 @@ const Landing = () => {
             <footer className="bg-[#1A1A1A] text-white pt-20 pb-10 border-t-4 border-[#e9671c]">
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
                     <div>
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="bg-[#e9671c] p-1.5 rounded-sm"><Landmark size={20} /></div>
-                            <h1 className="font-serif text-lg font-bold">CivicArch AI</h1>
+                        <div className="flex items-center gap-3">
+                            <div className="bg-[#e9671c] p-1.5 rounded-sm text-white">
+                                <Landmark size={24} />
+                            </div>
+                            <div>
+                                <h1 className="font-serif text-xl font-bold leading-none">JanSahaay</h1>
+                            </div>
                         </div>
+
                         <p className="text-stone-400 text-sm leading-relaxed mb-8 font-light">
                             Architecting the future of administrative justice in India. Powered by verified AI models and institutional expertise.
                         </p>
