@@ -62,7 +62,7 @@ const AboutUs = () => {
 
             {/* Header Section */}
             <header className="bg-[#111] text-white py-24 px-6 text-center">
-                <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">About CivicArch AI</h1>
+                <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">About JanSahaaya</h1>
                 <p className="text-stone-400 italic max-w-2xl mx-auto text-sm md:text-base leading-relaxed border-t border-white/10 pt-6">
                     "Bridging the gap between citizens and administration through intelligent technology."
                 </p>
@@ -75,7 +75,7 @@ const AboutUs = () => {
                         <h2 className="text-3xl font-serif font-bold text-stone-900 mb-8">Our Mission</h2>
                         <div className="space-y-6 text-stone-600 leading-relaxed text-base">
                             <p>
-                                CivicArch AI was founded with a single goal: to democratize access to administrative justice in India.
+                                JanSahaaya was founded with a single goal: to democratize access to administrative justice in India.
                                 We believe that the complexity of legal paperwork should never be a barrier to transparency and accountability.
                             </p>
                             <p>
@@ -97,31 +97,48 @@ const AboutUs = () => {
                 </div>
             </section>
 
-            {/* RTI Act Info Card - Aligned with Nav/Footer */}
+            {/* ── Core Framework Info Card ── */}
             <section className="max-w-7xl mx-auto px-10 pb-24">
                 <div className="bg-[#111] rounded-[2rem] p-16 text-center text-white shadow-2xl">
-                    <h2 className="text-3xl font-serif font-bold mb-10">The RTI Act, 2005</h2>
-                    <div className="max-w-3xl mx-auto space-y-8 text-stone-400 text-sm md:text-base leading-relaxed">
+                    <h2 className="text-3xl font-serif font-bold mb-10">The Three Pillars of Civic Action</h2>
+                    
+                    <div className="max-w-4xl mx-auto space-y-6 text-stone-400 text-sm md:text-base leading-relaxed">
                         <p>
-                            The Right to Information (RTI) is an act of the Parliament of India which sets out the rules and
-                            procedures regarding citizens' right to information. It replaced the former Freedom of Information Act, 2002.
+                            JanSahaay empowers citizens by perfectly categorizing and formatting civic issues into three distinct, legally recognized frameworks: <strong>Right to Information (RTI)</strong>, <strong>Public Grievances</strong>, and <strong>Formal Complaints</strong>.
                         </p>
                         <p>
-                            Under the provisions of the Act, any citizen of India may request information from a "public authority"
-                            (a body of Government or "instrumentality of State") which is required to reply expeditiously or within thirty days.
+                            Whether you are demanding official government records under the RTI Act of 2005, reporting administrative delays governed by the Citizen's Charter, or highlighting municipal violations like broken infrastructure, our AI ensures your voice is structurally sound, legally precise, and directed to the exact department responsible.
                         </p>
                     </div>
 
+                    {/* 3-Column Highlights */}
                     <div className="flex flex-col md:flex-row justify-center items-center gap-12 mt-12 border-t border-white/10 pt-12">
-                        <div className="text-center">
-                            <div className="text-[#e9671c] text-4xl font-bold mb-1">30 Days</div>
-                            <div className="text-xs uppercase tracking-widest font-bold">Max Response Time</div>
+                        
+                        {/* Pillar 1 */}
+                        <div className="text-center w-48">
+                            <div className="text-[#e9671c] text-4xl font-serif font-bold mb-2">RTI</div>
+                            <div className="text-xs uppercase tracking-widest font-bold text-white mb-1">Transparency</div>
+                            <div className="text-[10px] text-stone-500 uppercase tracking-wider">Data & Records</div>
                         </div>
-                        <div className="hidden md:block w-[1px] h-12 bg-white/10"></div>
-                        <div className="text-center">
-                            <div className="text-[#e9671c] text-4xl font-bold mb-1">₹10</div>
-                            <div className="text-xs uppercase tracking-widest font-bold">Application Fee</div>
+
+                        <div className="hidden md:block w-[1px] h-16 bg-white/10"></div>
+                        
+                        {/* Pillar 2 */}
+                        <div className="text-center w-48">
+                            <div className="text-[#e9671c] text-4xl font-serif font-bold mb-2">Grievance</div>
+                            <div className="text-xs uppercase tracking-widest font-bold text-white mb-1">Accountability</div>
+                            <div className="text-[10px] text-stone-500 uppercase tracking-wider">Service Delays</div>
                         </div>
+
+                        <div className="hidden md:block w-[1px] h-16 bg-white/10"></div>
+                        
+                        {/* Pillar 3 */}
+                        <div className="text-center w-48">
+                            <div className="text-[#e9671c] text-4xl font-serif font-bold mb-2">Complaint</div>
+                            <div className="text-xs uppercase tracking-widest font-bold text-white mb-1">Resolution</div>
+                            <div className="text-[10px] text-stone-500 uppercase tracking-wider">Physical Issues</div>
+                        </div>
+
                     </div>
                 </div>
             </section>
