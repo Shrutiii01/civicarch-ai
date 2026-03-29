@@ -159,7 +159,6 @@ function ResultPage() {
           <div className="hidden md:flex items-center gap-6 text-[10px] font-bold text-stone-500 uppercase tracking-widest">
               <Link to="/dashboard" className="hover:text-[#e9671c] transition-colors">Dashboard</Link>
               <Link to="/history" className="hover:text-[#e9671c] transition-colors">History</Link>
-              <Link to="/heatmap" className="hover:text-[#e9671c] transition-colors">Heatmap</Link>
               <Link to="/profile" className="hover:text-[#e9671c] transition-colors">Profile</Link>
               <div className="flex items-center gap-3 pl-5 border-l border-stone-200">
                   <button

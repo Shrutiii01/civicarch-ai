@@ -53,8 +53,15 @@ const HowItWorks = () => {
                     <div className="hidden lg:flex items-center gap-10">
                         <Link to="/" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Home</Link>
                         <Link to="/aboutus" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">About us</Link>
-                        <Link to="/howitwork" className="text-sm font-semibold text-[#e9671c]" >How It Works</Link>
-                        <Link to="/heatmap" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">Heatmap</Link>
+                        <Link to="/howitwork" className="text-sm font-semibold hover:text-[#e9671c] transition-colors">How It Works</Link>
+                        
+                        {/* 🔥 UPDATED: Removed target="_blank" so it opens in the same tab */}
+                        <a 
+                            href="https://preview.rti-heat-map.pages.dev/" 
+                            className="text-sm font-semibold hover:text-[#e9671c] transition-colors"
+                        >
+                            Heatmap
+                        </a>
                     </div>
 
                     <Link to="/login" className="bg-[#e9671c] hover:bg-[#C0392B] text-white px-6 py-2.5 rounded-sm font-bold text-sm tracking-wide transition-all shadow-md">
