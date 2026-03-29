@@ -116,3 +116,7 @@ export const getComplaintById = (complaintId) => {
 };
 
 export default api
+
+export const classifyIssue = (text) => {
+  return api.post("/complaints/classify", { text: text });
+};

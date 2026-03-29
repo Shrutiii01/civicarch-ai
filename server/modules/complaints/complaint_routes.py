@@ -15,6 +15,10 @@ from .complaint_service import create_complaint
 from modules.ai.image_service import process_image 
 from modules.ai.audio_service import process_audio
 
+from pydantic import BaseModel
+from modules.ai.classification_service import classify_request
+from utils.complaint_processor import process_complaint
+
 router = APIRouter(prefix="/complaints")
 
 # Ensure uploads directory exists for images and audio files
@@ -28,6 +32,24 @@ def get_db():
     finally:
         db.close()
 
+# 1. Create a quick schema to catch the text from the frontend
+class ClassifyPayload(BaseModel):
+    text: str
+
+# 2. Expose the classification AI to the Dashboard
+@router.post("/classify")
+async def api_classify_issue(payload: ClassifyPayload):
+    try:
+        # We translate it first (just in case they type in Hindi/Marathi)
+        processed = process_complaint(text=payload.text)
+        translated_text = processed.get("translated_text", payload.text)
+        
+        # Ask the AI what category this belongs to
+        category = classify_request(translated_text)
+        
+        return {"category": category}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/submit")
 async def submit_complaint(

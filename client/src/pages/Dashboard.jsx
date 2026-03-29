@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { classifyIssue } from '../services/api'; // 🔥 NEW: Imported our API function
 
 export default function Dashboard() {
     const [query, setQuery] = useState("");
@@ -23,27 +24,26 @@ export default function Dashboard() {
             return;
         }
 
-        setIsAnalyzing(true); // Replaces the undefined 'setLoading'
+        setIsAnalyzing(true); 
 
         try {
-            // 2. Backend API Call
-            const response = await axios.post('http://localhost:8000/ai/classify', {
-                text: query
-            });
-
+            // 🔥 2. Use our clean api.js function instead of raw axios
+            const response = await classifyIssue(query);
             const category = response.data.category; // Expected: 'complaint', 'information_request', or 'grievance'
 
             // 3. Feedback
-            toast.success(`AI identified this as a ${category.replace('_', ' ')}`);
+            toast.success(`AI identified this as a ${category.replace('_', ' ').toUpperCase()}`);
 
-            // 4. Structural Routing based on category
-            if (category === "information_request") {
-                navigate('/rti-form', { state: { initialText: query } });
-            } else if (category === "grievance") {
-                navigate('/grievance-form', { state: { initialText: query } });
-            } else {
-                navigate('/complaint-form', { state: { initialText: query } });
-            }
+            // 🔥 4. Structural Routing with a tiny delay so the toast is visible
+            setTimeout(() => {
+                if (category === "information_request") {
+                    navigate('/rti-form', { state: { initialText: query } });
+                } else if (category === "grievance") {
+                    navigate('/grievance-form', { state: { initialText: query } });
+                } else {
+                    navigate('/complaint-form', { state: { initialText: query } });
+                }
+            }, 1000);
 
         } catch (error) {
             console.error("AI Classification failed", error);
